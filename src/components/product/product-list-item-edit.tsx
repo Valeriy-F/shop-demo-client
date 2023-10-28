@@ -1,8 +1,7 @@
-import IProduct from 'types/product'
-import ProductForm from './product-form'
-import { Link } from 'react-router-dom'
-import { ProductListItemContext } from 'context/product/product-list-item'
-import { useContext } from 'react'
+import ProductForm from './product-form';
+import { ProductListItemContext } from 'context/product/product-list-item';
+import { useContext } from 'react';
+import IProduct from 'types/product';
 
 type TProductListItemEditProps = {
     product: IProduct
@@ -11,16 +10,7 @@ type TProductListItemEditProps = {
 export default function ProductListItemEdit({product}: TProductListItemEditProps) {
     const {productPut, toggleEditModeOnClick} = useContext(ProductListItemContext)
 
-    console.log('Render Product edit form ' + product.name)
-
     return (
-        <div>
-            <div className='text-right'>
-                <Link to='#' onClick={toggleEditModeOnClick}>Cancel</Link>
-            </div>
-            <div>
-                <ProductForm sendForm={productPut} defaultValue={product} />
-            </div>
-        </div>
+        <ProductForm sendForm={productPut} defaultValue={product} cancelButtonHandler={toggleEditModeOnClick} />
     )
 }

@@ -1,8 +1,10 @@
-import Button from 'components/ui/button'
-import Input, { Textarea } from 'components/ui/input'
-import IProduct from 'types/product'
-import { TProductPutRequest } from 'api/product-api'
-import { useProductForm } from 'hooks/product/product-form'
+import { Button, InputAdornment } from '@mui/material';
+import { TProductPutRequest } from 'api/product-api';
+import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
+import TextField from 'components/ui/input';
+import { useProductForm } from 'hooks/product/product-form';
+import { MouseEvent } from 'react';
+import IProduct from 'types/product';
 
 export type TProductFormEventTartget = EventTarget & {
     name: { value: string }
@@ -11,14 +13,15 @@ export type TProductFormEventTartget = EventTarget & {
     description: { value: string }
 }
 
-export type TProductFormSendFormHandler = (product: IProduct) => Promise<IProduct>
-
 export type TProductFormProps = {
     sendForm: TProductPutRequest
     defaultValue?: IProduct,
+    cancelButtonHandler?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void
 }
 
 export default function ProductForm(props: TProductFormProps) {
+    const {defaultValue: product, cancelButtonHandler} = props
+
     const {
         nameFeildProps,
         displayNameFeildProps,
@@ -27,20 +30,40 @@ export default function ProductForm(props: TProductFormProps) {
         handleFormSubmit
     } = useProductForm(props)
 
-    return (
-        <div>
-            <div className='py-2'>
-                <form onSubmit={handleFormSubmit}>
-                    {!props.defaultValue && <Input {...nameFeildProps} />}
-                    <Input {...displayNameFeildProps} />
-                    <Input {...priceFieldProps} />
-                    <Textarea {...descriptionFieldProps} />
+    const mediaData: TCardMediaData = {
+        component: 'img',
+        src: process.env.PUBLIC_URL + "/images/product.webp"
+    }
 
-                    <div className='pt-4'>
-                        <Button name='Save' type='submit' className='w-full' />
-                    </div>
-                </form>
-            </div>
-        </div>
-    )
+    const content = (<>
+        {!product && <TextField {...nameFeildProps} />}
+        <TextField {...displayNameFeildProps} />
+        <TextField
+            {...priceFieldProps}
+            InputProps={{
+                startAdornment: <InputAdornment position="start">&#8381;</InputAdornment>,
+            }}
+        />
+        <TextField {...descriptionFieldProps} />
+    </>)
+
+    const actionsData: TCardActionsData = {
+        leftSide: <Button type='submit'>Save</Button>,
+    }
+
+    if (cancelButtonHandler) {
+        actionsData.rightSide = <Button color='secondary' onClick={cancelButtonHandler}>Close</Button>
+    }
+
+    const cardProps: TCardProps = {
+        content,
+        mediaData,
+        actionsData,
+    }
+
+    return (
+        <form onSubmit={handleFormSubmit}>
+            <Card {...cardProps} />
+        </form>
+    );
 }

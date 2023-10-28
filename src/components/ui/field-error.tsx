@@ -9,7 +9,7 @@ type TFieldErrorsProps = {
 
 export const FieldError = ({ error }: TFieldErrorProps) => {
     return (
-        <div className="text-sm text-red-600 p-1">{error}</div>
+        <div>{error}</div>
     )
 }
 

@@ -1,27 +1,43 @@
-import NotFoundException from 'api/exceptions/NotFoundException'
-import Panel from './ui/panel'
+import Card, { TCardProps } from './ui/card';
+import { Typography } from '@mui/material';
+import NotFoundException from 'api/exceptions/NotFoundException';
 
 type TErrorProps = {
-    error?: Error
+    error?: Error | number
 }
 
-export default function Error({ error }: TErrorProps) {
+const Error = ({ error }: TErrorProps) => {
     let errorMessage = 'Unknown error occurred'
     let errorDescription = 'Somthing went wrong :-('
 
-    if (error instanceof NotFoundException) {
+    if (error === 404 || error instanceof NotFoundException) {
         errorMessage = 'Error 404'
         errorDescription = 'This page is not found.'
     }
 
-    return (
-        <div className='absolute top-1/2 left-1/2 w-[600px] h-[400px] -ml-[300px] -mt-[200px]'>
-            <Panel>
-                <div className='min-h-full grid align-middle'>
-                    <div className='flex justify-center items-end py-4 text-4xl font-bold'>{errorMessage}</div>
-                    <div className='flex justify-center py-4 text-2xl'>{errorDescription}</div>
-                </div>
-            </Panel>
-        </div>
-    )
+    const content = (<>
+        <Typography gutterBottom variant="h5" component="div" sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            fontWeight: 'bold'
+        }}>
+            {errorMessage}
+        </Typography>
+        <Typography gutterBottom variant="h6" component="div" sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            fontWeight: 'bold'
+        }}>
+            {errorDescription}
+        </Typography>
+    </>)
+
+    const cardProps: TCardProps = {
+        content
+    }
+
+    return <Card {...cardProps} />
 }
+
+export default Error
+export {type TErrorProps}

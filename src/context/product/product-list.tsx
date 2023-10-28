@@ -1,13 +1,17 @@
-import IProduct from 'types/product'
+import { Add as AddIcon } from '@mui/icons-material';
+import { Fab } from '@mui/material';
+import { TProductPostRequest } from 'api/product-api';
+import NavigationContext from 'context/navigation-context';
+import { useProductList } from 'hooks/product/product';
+import { useProductPost } from 'hooks/product/product-api';
 import {
     createContext,
     MouseEvent,
     ReactNode,
+    useContext,
     useState
-    } from 'react'
-import { TProductPostRequest } from 'api/product-api'
-import { useProductList } from 'hooks/product/product'
-import { useProductPost } from 'hooks/product/product-api'
+    } from 'react';
+import IProduct from 'types/product';
 
 type TProductListContext = {
     products: IProduct[],
@@ -35,6 +39,7 @@ export const ProductListContext = createContext<TProductListContext>({
 })
 
 export function ProductListProvider({ children }: TProductListProviderProps) {
+    const navigationProviderValue = useContext(NavigationContext)
     const [isAddMode, setIsAddMode] = useState(false)
 
     const {
@@ -45,7 +50,7 @@ export function ProductListProvider({ children }: TProductListProviderProps) {
         deleteProduct,
     } = useProductList()
 
-    
+
     const { productPost } = useProductPost({
         onSuccess: product => {
             addProduct(product)
@@ -65,6 +70,14 @@ export function ProductListProvider({ children }: TProductListProviderProps) {
         setIsAddMode(false)
     }
 
+    navigationProviderValue.navigationRightMenuData = [
+        <Fab key={navigationProviderValue.navigationRightMenuData.length} size='medium' color="secondary" aria-label="add" onClick={enableAddNewProductMode} sx={{
+            boxShadow: 0
+        }}>
+            <AddIcon />
+        </Fab>
+    ]
+
     return (
         <ProductListContext.Provider value={{
             products,
@@ -76,7 +89,9 @@ export function ProductListProvider({ children }: TProductListProviderProps) {
             enableAddNewProductMode,
             disableAddNewProductMode
         }}>
-            {children}
+            <NavigationContext.Provider value={navigationProviderValue}>
+                {children}
+            </NavigationContext.Provider>
         </ProductListContext.Provider>
     )
 }

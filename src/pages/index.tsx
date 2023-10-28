@@ -1,30 +1,34 @@
-import ProductDetailsPage from './product-details-page'
-import ProductListPage from './product-list-page'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { TNavLinkData } from '../components/ui/navigation'
+import ErrorPage from './error-page';
+import ProductDetailsPage from './product-details-page';
+import ProductListPage from './product-list-page';
+import NavigationContext from 'context/navigation-context';
+import { useContext } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 const PATH_PRODUCTS = 'products'
 
-export const navLinksData: TNavLinkData[] = [
-    {
-        id: 'nav-link-1',
-        path: '/',
-        name: 'Main'
-    },
-    {
-        id: 'nav-link-2',
-        path: `/${PATH_PRODUCTS}`,
-        name: 'Products'
-    }
-]
-
 export function Routing() {
+    const navigationProviderValue = useContext(NavigationContext)
+
+    navigationProviderValue.navigationMenuData = [
+        {
+            href: '/',
+            name: 'Main'
+        },
+        {
+            href: `/${PATH_PRODUCTS}`,
+            name: 'Products'
+        }
+    ]
+
     return (
-        <Routes>
-            <Route path={`/${PATH_PRODUCTS}/:name`} element={<ProductDetailsPage />} />
-            <Route path={`/${PATH_PRODUCTS}`} element={<ProductListPage />} />
-            <Route path='/' element={<Navigate to={`/${PATH_PRODUCTS}`} />} />
-            <Route path='*' element={<Navigate to="/" />} />
-        </Routes>
+        <NavigationContext.Provider value={navigationProviderValue}>
+            <Routes>
+                <Route path={`/${PATH_PRODUCTS}/:name`} element={<ProductDetailsPage />} />
+                <Route path={`/${PATH_PRODUCTS}`} element={<ProductListPage />} />
+                <Route path='/' element={<Navigate to={`/${PATH_PRODUCTS}`} />} />
+                <Route path='*' element={<ErrorPage error={404} />} />
+            </Routes>
+        </NavigationContext.Provider>
     )
 }

@@ -1,33 +1,44 @@
-import { Link, useLocation } from 'react-router-dom'
+import { NavLink } from './link';
+import NavigationContext from 'context/navigation-context';
+import { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
+import {
+    AppBar,
+    Box,
+    Toolbar,
+    } from '@mui/material'
 
-export type TNavLinkData = {
-    id: string
-    path: string
+export type TNavigationMenuItemData = {
+    href: string
     name: string
 }
 
-export type TNavigationProps = {
-    navLinksData: TNavLinkData[],
-}
-
-export default function Navigation({ navLinksData }: TNavigationProps) {
+export default function Navigation() {
+    const {navigationMenuData, navigationRightMenuData} = useContext(NavigationContext)
     const location = useLocation()
 
     return (
-        <nav className='bg-current-800'>
-            <ul className='flex flex-row justify-start '>
-                {navLinksData.map(navLinkData => {
-                    let isActive = (location.pathname === navLinkData.path) 
+        <AppBar id='main-navbar' position="static">
+            <Toolbar>
+                <Box sx={{ flexGrow: 1 }}>
+                    {navigationMenuData.map(navigationMenuItemData => {
+                        const { href, name } = navigationMenuItemData
 
-                    return (
-                        <li key={navLinkData.id} className={`px-5 py-3 text-current-100 hover:bg-current-600 ${isActive && 'bg-current-700'}`}>{
-                            <Link to={navLinkData.path}>
-                                {navLinkData.name}
-                            </Link>
-                        }</li>
-                    )
-                })}
-            </ul>
-        </nav>
+                        return (
+                            <NavLink
+                                key={href}
+                                href={href}
+                                isActive={(location.pathname === href)}
+                            >
+                                {name}
+                            </NavLink>
+                        )
+                    })}
+                </Box>
+                <Box>
+                    {navigationRightMenuData.map(menuItem => menuItem)}
+                </Box>
+            </Toolbar>
+        </AppBar>
     )
 }

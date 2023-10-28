@@ -1,41 +1,48 @@
-import ButtonAddProduct from './ui/button-add-product'
-import Error from 'components/error'
-import Panel from 'components/ui/panel'
-import ProductListItem from './product-list-item'
-import ProductListItemAdd from './product-list-item-add'
-import { ProductListContext } from 'context/product/product-list'
-import { ProductListItemProvider } from 'context/product/product-list-item'
-import { useContext, useMemo } from 'react'
+import ProductListItem from './product-list-item';
+import ProductListItemAdd from './product-list-item-add';
+import { Grid } from '@mui/material';
+import Error from 'components/error';
+import { ProductListContext } from 'context/product/product-list';
+import { ProductListItemProvider } from 'context/product/product-list-item';
+import { useContext, useMemo } from 'react';
 
 export default function ProductList() {
     const {
         products,
         isAddMode,
-        fetchProductsError,
-        enableAddNewProductMode,
+        fetchProductsError
     } = useContext(ProductListContext)
 
     const productListView = useMemo(() => {
         return products.map(product => {
             return (
-                <Panel key={product.name}>
+                <Grid item xs={12} md={6} lg={4} key={product.name} >
                     <ProductListItemProvider>
                         <ProductListItem product={product} />
                     </ProductListItemProvider>
-                </Panel>
+                </Grid>
             )
         })
     }, [products])
+
+    const productAddView = useMemo(() => {
+        return (
+            <Grid item xs={12} md={6} lg={4} >
+                <ProductListItemAdd />
+            </Grid>
+        )
+    }, [])
 
     if (fetchProductsError) {
         return <Error error={fetchProductsError} />
     }
 
     return (
-        <div className="grid grid-cols-4 gap-6 auto-cols-auto md:grid-cols-2 sm:grid-cols-1">
-            <ButtonAddProduct onClick={enableAddNewProductMode} />
-            {isAddMode && <ProductListItemAdd />}
-            {productListView}
+        <div>
+            <Grid container spacing={4} alignItems='stretch'>
+                {isAddMode && productAddView}
+                {productListView}
+            </Grid>
         </div>
     )
 }
