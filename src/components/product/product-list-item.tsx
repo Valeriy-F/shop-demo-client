@@ -1,8 +1,8 @@
-import IProduct from 'types/product'
-import ProductListItemEdit from './product-list-item-edit'
-import ProductListItemView from './product-list-item-view'
-import { ProductListItemContext } from 'context/product/product-list-item'
-import { useContext } from 'react'
+import ProductListItemEdit from './product-list-item-edit';
+import ProductListItemView from './product-list-item-view';
+import { ProductListItemContext } from 'context/product/product-list-item';
+import { useContext } from 'react';
+import IProduct from 'types/product';
 
 export type TProductListItemProps = {
     product: IProduct,
