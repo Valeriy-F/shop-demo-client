@@ -33,7 +33,7 @@ const Card = (props: TCardProps) => {
 
     const cardMediaBlock = mediaData ? <CardMedia
         component={mediaData.component}
-        src={mediaData.src}
+        image={mediaData.src}
         height={mediaData.height || '240'}
         alt={mediaData.alt}
     /> : <></>
@@ -43,12 +43,14 @@ const Card = (props: TCardProps) => {
     const cardBody = actionAreaUrl
         ? (
             <CardActionArea sx={{
+                width: '100%',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'flex-start'
             }}>
                 <Link href={actionAreaUrl} sx={{
+                    width: '100%',
                     height: '100%',
                     textDecoration: 'none'
                 }}>
@@ -65,17 +67,15 @@ const Card = (props: TCardProps) => {
     let actionsBlock = <></>
 
     if (actionsData) {
-        const leftSide = actionsData.leftSide ? <Box>{actionsData.leftSide}</Box> : <></>
-        const rightSide = actionsData.rightSide ? <Box>{actionsData.rightSide}</Box> : <></>
-
         actionsBlock = (
             <CardActions sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                padding: '8px 16px'
             }}>
-                {leftSide}
-                {rightSide}
+                <Box>{actionsData.leftSide}</Box>
+                <Box>{actionsData.rightSide}</Box>
             </CardActions>
         )
     }

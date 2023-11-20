@@ -1,26 +1,24 @@
 import { Delete } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
-import { ProductListItemContext } from 'context/product/product-list-item';
-import { MouseEvent, useContext } from 'react';
-import IProduct from 'types/product';
+import { Product } from 'model/product';
 
 type TProductListItemViewProps = {
-    product: IProduct
+    product: Product,
+    startProductEditProcess?: (product: Product) => void,
+    deleteProduct?: (product: Product) => void
 }
 
-export default function ProductListItemView({ product }: TProductListItemViewProps) {
-    const {productDelete, toggleEditModeOnClick} = useContext(ProductListItemContext)
-
-    const handleDeleteClick = (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault()
-
-        productDelete(product)
-    }
+export default function ProductListItemView(props: TProductListItemViewProps) {
+    const {
+        product,
+        startProductEditProcess,
+        deleteProduct
+    } = props
 
     const mediaData: TCardMediaData = {
         component: 'img',
-        src: process.env.PUBLIC_URL + "/images/product.webp"
+        src: product.files.image
     }
 
     const content = (<>
@@ -44,8 +42,14 @@ export default function ProductListItemView({ product }: TProductListItemViewPro
     </>)
 
     const actionsData: TCardActionsData = {
-        leftSide: <Button size="small" onClick={toggleEditModeOnClick}>Edit</Button>,
-        rightSide: <Button size="small" color='error' onClick={handleDeleteClick} startIcon={<Delete />}>Delete</Button>
+        leftSide: startProductEditProcess && <Button size="small" onClick={event => {
+                event.preventDefault()
+                startProductEditProcess(product)
+            }}>Edit</Button>,
+        rightSide: deleteProduct && <Button size="small" color='error' onClick={event => {
+                event.preventDefault()
+                deleteProduct(product)
+            }} startIcon={<Delete />}>Delete</Button>
     }
 
     const cardProps: TCardProps = {
@@ -57,3 +61,6 @@ export default function ProductListItemView({ product }: TProductListItemViewPro
 
     return <Card {...cardProps} />
 }
+
+export { type TProductListItemViewProps };
+

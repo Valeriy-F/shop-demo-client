@@ -1,31 +1,60 @@
-import Client, { THttpRequest } from './client'
-import IProduct from 'types/product'
+import Client from './client';
+import { BaseProduct, Product } from 'model/product';
+import { TBaseProduct, TProduct } from 'types/product';
 
-export type TProductGetAllRequest = THttpRequest<undefined, IProduct[]>
-export type TProductGetRequest = THttpRequest<string, IProduct>
-export type TProductPostRequest = THttpRequest<IProduct, IProduct>
-export type TProductPutRequest = THttpRequest<IProduct, IProduct>
-export type TProductDeleteRequest = THttpRequest<IProduct, void>
+export type TProductGetAllRequest = typeof GetAll
+export type TProductGetRequest = typeof Get
+export type TProductPostRequest = typeof Post
+export type TProductPutRequest = typeof Put
+export type TProductPatchImageRequest = typeof PatchImage;
+export type TProductDeleteRequest = typeof Delete
 
 const URL = '/products'
 
-const GetAll = async (): Promise<IProduct[]> => {
-    return await Client.Get<IProduct[]>(URL)
+const GetAll = async (): Promise<Product[]> => {
+    const products = await Client.Get<TProduct[]>(URL);
+
+    return products.map(product => Product.create(product));
 }
 
-const Get = async (name: string): Promise<IProduct> => {
-    return await Client.Get<IProduct>(`${URL}/${name}`)
+const Get = async (name: string): Promise<Product> => {
+    const product = await Client.Get<TProduct>(`${URL}/${name}`);
+
+    return Product.create(product);
 }
 
-const Post = async (product: IProduct): Promise<IProduct> => {
-    return await Client.Post<IProduct>(URL, product)
+const Post = async (product: TBaseProduct): Promise<Product> => {
+    if (product instanceof BaseProduct) {
+        product = product.toSimpleObject();
+    }
+
+    const productResponse = await Client.Post<TBaseProduct, TProduct>(URL, product);
+
+    return Product.create(productResponse);
 }
 
-const Put = async (product: IProduct): Promise<IProduct> => {
-    return await Client.Put<IProduct>(`${URL}/${product.name}`, product)
+const Put = async (product: TBaseProduct): Promise<Product> => {
+    if (product instanceof BaseProduct) {
+        product = product.toSimpleObject()
+    }
+
+    const productResponse = await Client.Put<TBaseProduct, TProduct>(`${URL}/${product.name}`, product);
+
+    return Product.create(productResponse);
 }
 
-const Delete = async (product: IProduct) => {
+const PatchImage = async (product: TProduct, file: File): Promise<Product> => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const productImageURL = await Client.Patch<FormData, string>(`${URL}/${product.name}/image`, formData);
+
+    product.files.image = productImageURL;
+
+    return Product.create(product);
+}
+
+const Delete = async (product: TBaseProduct) => {
     await Client.Delete(`${URL}/${product.name}`)
 }
 
@@ -34,6 +63,7 @@ const ProductApi = {
     get: Get,
     post: Post,
     put: Put,
+    patchImage: PatchImage,
     delete: Delete
 }
 

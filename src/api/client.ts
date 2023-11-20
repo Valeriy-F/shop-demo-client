@@ -1,16 +1,13 @@
-import ApiException from './exceptions/ApiException'
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import ClientErrorException from './exceptions/ClientErrorException'
-import ConflictException from './exceptions/ConflictException'
-import InternalServerErrorException from './exceptions/InternalServerErrorException'
-import NotFoundException from './exceptions/NotFoundException'
-import { ResponseInfo } from './types/TApi'
+import ApiException from './exceptions/ApiException';
+import ClientErrorException from './exceptions/ClientErrorException';
+import ConflictException from './exceptions/ConflictException';
+import InternalServerErrorException from './exceptions/InternalServerErrorException';
+import NotFoundException from './exceptions/NotFoundException';
+import { ResponseInfo } from './types/TApi';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
-export type THttpRequest<TReqData, TRes> = (requestData: TReqData) => Promise<TRes>
-
-const validateResponseInfo = <T extends unknown>(responseInfo: ResponseInfo<T>) => {
+const validateResponseInfo = <T>(responseInfo: ResponseInfo<T>) => {
     if (responseInfo.status >= 500) {
-
         throw new InternalServerErrorException('Somthing went wrong!')
     }
 
@@ -27,7 +24,7 @@ const validateResponseInfo = <T extends unknown>(responseInfo: ResponseInfo<T>) 
     }
 }
 
-const getResponseData = <T extends unknown>(responseInfo: ResponseInfo<T>): T => {
+const getResponseData = <T>(responseInfo: ResponseInfo<T>): T => {
     validateResponseInfo<T>(responseInfo)
 
     return responseInfo.data
@@ -41,7 +38,7 @@ const createExceptionByError = (error: any): Error => {
 
 const client = axios.create({
     baseURL: 'http://0.0.0.0:3001/api',
-    validateStatus: (status: number) => (status < 500)
+    validateStatus: (status: number) => (status < 600)
 })
 
 const Get = async <T extends unknown>(url: string, config?: AxiosRequestConfig): Promise<T> => {
@@ -54,31 +51,41 @@ const Get = async <T extends unknown>(url: string, config?: AxiosRequestConfig):
     }
 }
 
-const Post = async<T extends unknown>(url: string, data: T): Promise<T> => {
+const Post = async<TReq, TRes>(url: string, data: TReq): Promise<TRes> => {
     try {
-        const response: AxiosResponse<ResponseInfo<T>> = await client.post(url, data)
+        const response: AxiosResponse<ResponseInfo<TRes>> = await client.post(url, data)
 
-        return getResponseData(response.data)
+        return getResponseData<TRes>(response.data)
     } catch (error) {
         throw createExceptionByError(error)
     }
 }
 
-const Put = async<T extends unknown>(url: string, data: T): Promise<T> => {
+const Put = async<TReq, TRes>(url: string, data: TReq): Promise<TRes> => {
     try {
-        const response: AxiosResponse<ResponseInfo<T>> = await client.put(url, data)
+        const response: AxiosResponse<ResponseInfo<TRes>> = await client.put(url, data)
 
-        return getResponseData(response.data)
+        return getResponseData<TRes>(response.data)
     } catch (error) {
         throw createExceptionByError(error)
     }
 }
 
-const Delete = async <T extends unknown>(url: string) => {
+const Patch = async<TReq, TRes>(url: string, data: TReq): Promise<TRes> => {
     try {
-        const response: AxiosResponse<ResponseInfo<T>> = await client.delete(url)
+        const response: AxiosResponse<ResponseInfo<TRes>> = await client.patch(url, data);
 
-        validateResponseInfo(response.data)
+        return getResponseData<TRes>(response.data);
+    } catch (error) {
+        throw createExceptionByError(error);
+    }
+}
+
+const Delete = async <TRes>(url: string) => {
+    try {
+        const response: AxiosResponse<ResponseInfo<TRes>> = await client.delete(url)
+
+        validateResponseInfo<TRes>(response.data)
     } catch (error: any) {
         throw createExceptionByError(error)
     }
@@ -88,6 +95,7 @@ const Client = {
     Get,
     Post,
     Put,
+    Patch,
     Delete
 }
 

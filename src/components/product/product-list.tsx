@@ -1,35 +1,30 @@
-import ProductListItem from './product-list-item';
-import ProductListItemAdd from './product-list-item-add';
+import ProductAddForm, { TProductAddFormProps } from './form/product-add-form';
+import ProductEditForm, { TProductEditFormProps } from './form/product-edit-form';
+import ProductListItemView, { TProductListItemViewProps } from './product-list-item-view';
 import { Grid } from '@mui/material';
 import Error from 'components/error';
-import { ProductListContext } from 'context/product/product-list';
-import { ProductListItemProvider } from 'context/product/product-list-item';
-import { useContext, useMemo } from 'react';
+import { Product } from 'model/product';
 
-export default function ProductList() {
+type TProductListProps = {
+    products: Product[],
+    isAddMode: boolean,
+    productForEdit: Product | null,
+    fetchProductsError?: Error,
+    productAddFormProps?: TProductAddFormProps,
+    productEditFormProps?: Omit<TProductEditFormProps, 'product'>,
+    productViewProps?: Omit<TProductListItemViewProps, 'product'>
+}
+
+const ProductList = (props: TProductListProps) => {
     const {
         products,
         isAddMode,
-        fetchProductsError
-    } = useContext(ProductListContext)
-
-    const productListView = useMemo(() => {
-        return products.map(product => {
-            return (
-                <Grid item xs={12} md={6} lg={4} key={product.name} >
-                    <ProductListItemProvider>
-                        <ProductListItem product={product} />
-                    </ProductListItemProvider>
-                </Grid>
-            )
-        })
-    }, [products])
-
-    const productAddView = (
-        <Grid item xs={12} md={6} lg={4} >
-            <ProductListItemAdd />
-        </Grid>
-    )
+        productForEdit,
+        fetchProductsError,
+        productAddFormProps,
+        productEditFormProps,
+        productViewProps
+    } = props
 
     if (fetchProductsError) {
         return <Error error={fetchProductsError} />
@@ -38,9 +33,28 @@ export default function ProductList() {
     return (
         <div>
             <Grid container spacing={4} alignItems='stretch'>
-                {isAddMode && productAddView}
-                {productListView}
+                {isAddMode &&
+                    <Grid item xs={12} md={6} lg={4} >
+                        <ProductAddForm {...productAddFormProps} />
+                    </Grid>
+                }
+
+                {products.map(product => {
+                    if (productForEdit && productForEdit !== product) {
+                        delete productViewProps?.startProductEditProcess;
+                    }
+
+                    return (
+                        <Grid item xs={12} md={6} lg={4} key={product.name} >
+                            {(productForEdit === product)
+                                ? <ProductEditForm product={product} {...productEditFormProps} />
+                                : <ProductListItemView product={product} {...productViewProps} />}
+                        </Grid>
+                    )
+                })}
             </Grid>
         </div>
     )
 }
+
+export default ProductList

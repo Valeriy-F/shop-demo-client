@@ -1,21 +1,16 @@
 import { Button, Typography } from '@mui/material';
 import Error from 'components/error';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
-import { ProductContext } from 'context/product/product';
-import { useContext } from 'react';
-import IProduct from 'types/product';
+import { TProduct } from 'types/product';
 
-export type TProductDetailsProps = {
-    product: IProduct | null
+type TProductDetailsProps = {
+    product: TProduct | null,
+    fetchProductError?: Error
 }
 
-export default function ProductDetails() {
-    const { product, fetchProductError } = useContext(ProductContext)
-
+const ProductDetails = ({product, fetchProductError}: TProductDetailsProps) => {
     if (fetchProductError) {
-        return (
-            <Error error={fetchProductError} />
-        )
+        return <Error error={fetchProductError} />
     }
 
     if (!product) {
@@ -24,7 +19,7 @@ export default function ProductDetails() {
 
     const mediaData: TCardMediaData = {
         component: 'img',
-        src: process.env.PUBLIC_URL + "/images/product.webp"
+        src: product.files.image as string
     }
 
     const content = (<>
@@ -59,3 +54,5 @@ export default function ProductDetails() {
 
     return <Card {...cardProps} />
 }
+
+export default ProductDetails
