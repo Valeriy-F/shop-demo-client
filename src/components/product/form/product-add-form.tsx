@@ -33,9 +33,11 @@ export default function ProductAddForm(props: TProductAddFormProps) {
 
             afterProductCreatedHook && afterProductCreatedHook(productResponse);
         } catch (error) {
-            console.error(`Fialed to create new product "${product.name}".`);
+            const errorMessage = `Fialed to create new product "${product.name}".`
 
-            return;
+            console.error(errorMessage, error)
+
+            throw new Error(errorMessage)
         }
 
         if (imageFile) {
@@ -44,7 +46,11 @@ export default function ProductAddForm(props: TProductAddFormProps) {
 
                 afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse)
             } catch (error) {
-                console.error(`Failed to upload image file "${imageFile}" for product "${product.name}".`, error);
+                const errorMessage = `Failed to upload image file "${imageFile}" for product "${product.name}".`
+
+                console.error(errorMessage, error)
+
+                throw new Error(errorMessage)
             }
         }
     }

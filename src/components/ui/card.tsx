@@ -22,14 +22,21 @@ type TCardActionsData = {
 }
 
 type TCardProps = {
-    content: ReactNode,
+    content: JSX.Element,
+    beforeContent?: JSX.Element,
     actionAreaUrl?: string,
     actionsData?: TCardActionsData
     mediaData?: TCardMediaData,
 }
 
 const Card = (props: TCardProps) => {
-    const { actionAreaUrl, actionsData, content, mediaData } = props
+    const {
+        actionAreaUrl,
+        actionsData,
+        beforeContent,
+        content,
+        mediaData
+    } = props
 
     const cardMediaBlock = mediaData ? <CardMedia
         component={mediaData.component}
@@ -39,6 +46,13 @@ const Card = (props: TCardProps) => {
     /> : <></>
 
     const cardContent = <CardContent>{content}</CardContent>
+    const cardBodyGuts = (
+        <>
+            {cardMediaBlock}
+            {beforeContent}
+            {cardContent}
+        </>
+    )
 
     const cardBody = actionAreaUrl
         ? (
@@ -54,15 +68,11 @@ const Card = (props: TCardProps) => {
                     height: '100%',
                     textDecoration: 'none'
                 }}>
-                    {cardMediaBlock}
-                    {cardContent}
+                    {cardBodyGuts}
                 </Link>
             </CardActionArea>
         )
-        : (<>
-            {cardMediaBlock}
-            {cardContent}
-        </>)
+        : (<>{cardBodyGuts}</>)
 
     let actionsBlock = <></>
 

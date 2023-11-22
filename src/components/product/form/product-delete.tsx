@@ -15,7 +15,11 @@ const buildProductDeleteHandler = (props: TProductDeleteHandlerBuilderProps) => 
 
             afterProductDeletedHook && afterProductDeletedHook(product)
         } catch (error) {
-            console.error(`Failed to delete product "${product.name}".`)
+            const errorMessage = `Failed to delete product "${product.name}".`
+
+            console.error(errorMessage, error)
+
+            throw new Error(errorMessage)
         }
     }
 }

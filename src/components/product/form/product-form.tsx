@@ -4,7 +4,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Button } from '@mui/material';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
 import { Loading } from 'components/ui/loading';
+import { Alert } from 'components/ui/notification';
 import { BaseProduct, Product } from 'model/product';
+import { closeSnackbar } from 'notistack';
 import { MouseEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TFormProps } from 'types/form';
@@ -16,6 +18,7 @@ type TProductFormProps = {
 
 
 const ProductForm = ({ product, formFields, submitHandler, onCancelButtonClick }: TProductFormProps) => {
+    const [submitError, setSubmitError] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const formDataBuilder = new ProductFormDataBuilder(product);
 
@@ -28,7 +31,11 @@ const ProductForm = ({ product, formFields, submitHandler, onCancelButtonClick }
         resolver: yupResolver(yupValidationSchema)
     });
 
-    const content = formFields.map(formField => formField({ control, errors }));
+    const beforeContent = submitError ? <Alert type='error' title='Error' text={submitError} sx={{
+        borderRadius: '0'
+    }} /> : <></>
+
+    const content = <>{ formFields.map(formField => formField({ control, errors }))}</>;
 
     const mediaData: TCardMediaData = {
         component: 'img',
@@ -44,6 +51,7 @@ const ProductForm = ({ product, formFields, submitHandler, onCancelButtonClick }
     }
 
     const cardProps: TCardProps = {
+        beforeContent,
         content,
         mediaData,
         actionsData,
@@ -66,10 +74,14 @@ const ProductForm = ({ product, formFields, submitHandler, onCancelButtonClick }
             }
         }
 
+        closeSnackbar()
+        setSubmitError(undefined)
         setIsLoading(true)
 
         try {
             await submitHandler(data);
+        } catch (error: any) {
+            setSubmitError(error.message)
         } finally {
             setIsLoading(false)
         }
@@ -83,4 +95,5 @@ const ProductForm = ({ product, formFields, submitHandler, onCancelButtonClick }
 }
 
 export default ProductForm
-export { type TProductFormProps }
+export { type TProductFormProps };
+

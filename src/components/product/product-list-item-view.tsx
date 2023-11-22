@@ -2,11 +2,12 @@ import { Delete } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
 import { Product } from 'model/product';
+import { useSnackbar } from 'notistack';
 
 type TProductListItemViewProps = {
     product: Product,
     startProductEditProcess?: (product: Product) => void,
-    deleteProduct?: (product: Product) => void
+    deleteProduct?: (product: Product) => Promise<void>
 }
 
 export default function ProductListItemView(props: TProductListItemViewProps) {
@@ -15,6 +16,8 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
         startProductEditProcess,
         deleteProduct
     } = props
+
+    const { enqueueSnackbar } = useSnackbar()
 
     const mediaData: TCardMediaData = {
         component: 'img',
@@ -48,7 +51,10 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
             }}>Edit</Button>,
         rightSide: deleteProduct && <Button size="small" color='error' onClick={event => {
                 event.preventDefault()
-                deleteProduct(product)
+                deleteProduct(product).catch((error: any) => enqueueSnackbar(error.message, {
+                    variant: 'error',
+                    persist: true
+                }))
             }} startIcon={<Delete />}>Delete</Button>
     }
 

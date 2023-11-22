@@ -37,7 +37,13 @@ export default function ProductEditForm(props: TProductEditFormProps) {
 
                     afterProductUpdatedHook && afterProductUpdatedHook(productForUpdate);
                 })
-                .catch(error => console.error(`Failed to update product "${productForUpdate.name}".`, error))
+                .catch(error => {
+                    const errorMessage = `Failed to update product "${productForUpdate.name}".`
+
+                    console.error(errorMessage, error)
+
+                    throw new Error(errorMessage)
+                })
         ]
 
         if (imageFile) {
@@ -47,9 +53,13 @@ export default function ProductEditForm(props: TProductEditFormProps) {
 
                     afterImageFileUploadedHook && afterImageFileUploadedHook(productForUpdate);
                 })
-                .catch(
-                    error => console.error(`Failed to upload image file "${imageFile.name}" for product "${productForUpdate.name}".`, error)
-            )
+                .catch(error => {
+                    const errorMessage = `Failed to upload image file "${imageFile.name}" for product "${productForUpdate.name}".`
+
+                    console.error(errorMessage, error)
+
+                    throw new Error(errorMessage)
+                })
 
             requests.push(patchImageRequest)
         }
