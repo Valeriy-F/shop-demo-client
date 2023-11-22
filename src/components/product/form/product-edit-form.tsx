@@ -4,7 +4,7 @@ import {
     ImageFileProductFormField,
     PriceProductFormField
     } from './fields';
-import ProductForm, { TProductFormProps } from './product-form';
+import ProductForm, { createFormData, TProductFormProps } from './product-form';
 import ProductApi from 'api/product-api';
 import { Product } from 'model/product';
 import { MouseEvent } from 'react';
@@ -73,7 +73,7 @@ export default function ProductEditForm(props: TProductEditFormProps) {
 
     return (
         <ProductForm
-            product={product}
+            formData={createFormData(product)}
             submitHandler={submirHandler}
             formFields={[
                 ImageFileProductFormField,

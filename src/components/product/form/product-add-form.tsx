@@ -5,7 +5,7 @@ import {
     NameProductFormField,
     PriceProductFormField
     } from './fields';
-import ProductForm, { TProductFormProps } from './product-form';
+import ProductForm, { createFormData, TProductFormProps } from './product-form';
 import ProductApi from 'api/product-api';
 import { BaseProduct, Product } from 'model/product';
 import { MouseEvent } from 'react';
@@ -57,8 +57,7 @@ export default function ProductAddForm(props: TProductAddFormProps) {
 
     return (
         <ProductForm
-            product={new BaseProduct()}
-            submitHandler={submitHandler}
+            formData={createFormData(new BaseProduct())}
             formFields={[
                 ImageFileProductFormField,
                 NameProductFormField,
@@ -66,6 +65,7 @@ export default function ProductAddForm(props: TProductAddFormProps) {
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
+            submitHandler={submitHandler}
             onCancelButtonClick={onCancelButtonClick}
         />
     )

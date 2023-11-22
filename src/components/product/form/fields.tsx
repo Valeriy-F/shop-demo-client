@@ -1,4 +1,4 @@
-import { TProductFormData } from './product-form-data';
+import { TProductFormData } from './product-form';
 import { InputAdornment } from '@mui/material';
 import { FileInputField, TextField } from 'components/ui/input';
 import { Controller } from 'react-hook-form';
@@ -99,7 +99,7 @@ const DescriptionProductFormField = ({control, errors}: TFormFieldProps<TProduct
             label='Description'
             placeholder='Enter product description...'
             name={name}
-            value={value}
+            value={value || ''}
             onBlur={onBlur}
             onChange={onChange}
             inputRef={ref}
@@ -133,9 +133,9 @@ const ImageFileProductFormField = ({control, errors}: TFormFieldProps<TProductFo
 )
 
 export {
-    NameProductFormField,
-    DisplayNameProductFormField,
-    PriceProductFormField,
     DescriptionProductFormField,
-    ImageFileProductFormField
-}
+    DisplayNameProductFormField,
+    ImageFileProductFormField,
+    NameProductFormField,
+    PriceProductFormField
+};

@@ -25,4 +25,3 @@ const buildProductDeleteHandler = (props: TProductDeleteHandlerBuilderProps) => 
 }
 
 export { buildProductDeleteHandler };
-

@@ -1,6 +1,7 @@
 import { Delete } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
+import { useConfirm } from 'material-ui-confirm';
 import { Product } from 'model/product';
 import { useSnackbar } from 'notistack';
 
@@ -18,6 +19,7 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
     } = props
 
     const { enqueueSnackbar } = useSnackbar()
+    const confirm = useConfirm()
 
     const mediaData: TCardMediaData = {
         component: 'img',
@@ -46,16 +48,33 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
 
     const actionsData: TCardActionsData = {
         leftSide: startProductEditProcess && <Button size="small" onClick={event => {
-                event.preventDefault()
-                startProductEditProcess(product)
-            }}>Edit</Button>,
-        rightSide: deleteProduct && <Button size="small" color='error' onClick={event => {
-                event.preventDefault()
-                deleteProduct(product).catch((error: any) => enqueueSnackbar(error.message, {
+            event.preventDefault()
+            startProductEditProcess(product)
+        }}>Edit</Button>,
+        rightSide: deleteProduct && <Button size="small" color='error' onClick={async (event) => {
+            event.preventDefault()
+
+            try {
+                await confirm({
+                    title: `Delete product ${product.displayName}?`,
+                    titleProps: {color: 'error'},
+                    description: 'It will be completely deleted from the database! Are you sure?',
+                    confirmationText: <Typography color='error'>Yes</Typography>
+                })
+            } catch (error) {
+                // Deletion cancelled.
+                return
+            }
+
+            try {
+                await deleteProduct(product)
+            } catch (error: any) {
+                enqueueSnackbar(error.message, {
                     variant: 'error',
                     persist: true
-                }))
-            }} startIcon={<Delete />}>Delete</Button>
+                })
+            }
+        }} startIcon={<Delete />}>Delete</Button>
     }
 
     const cardProps: TCardProps = {

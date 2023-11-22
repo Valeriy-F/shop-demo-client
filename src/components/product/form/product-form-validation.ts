@@ -1,5 +1,5 @@
-import { TProductFormData } from './product-form-data';
 import * as yup from 'yup';
+import { TProductFormData } from './product-form';
 
 const yupValidationSchema: yup.ObjectSchema<TProductFormData> = yup
     .object({
@@ -17,4 +17,3 @@ const yupValidationSchema: yup.ObjectSchema<TProductFormData> = yup
     }).required();
 
 export { yupValidationSchema };
-

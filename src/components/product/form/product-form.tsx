@@ -1,4 +1,3 @@
-import { ProductFormDataBuilder, TProductFormData } from './product-form-data';
 import { yupValidationSchema } from './product-form-validation';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button } from '@mui/material';
@@ -10,24 +9,31 @@ import { closeSnackbar } from 'notistack';
 import { MouseEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TFormProps } from 'types/form';
+import { TBaseProduct } from 'types/product';
+
+type TProductFormData = {
+    product: TBaseProduct,
+    files: {
+        image?: File | null;
+    };
+}
 
 type TProductFormProps = {
-    product: BaseProduct,
     onCancelButtonClick?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void
 } & TFormProps<TProductFormData>
 
-
-const ProductForm = ({ product, formFields, submitHandler, onCancelButtonClick }: TProductFormProps) => {
+const ProductForm = ({ formData, formFields, submitHandler, onCancelButtonClick }: TProductFormProps) => {
     const [submitError, setSubmitError] = useState()
     const [isLoading, setIsLoading] = useState(false)
-    const formDataBuilder = new ProductFormDataBuilder(product);
+
+    const product = formData?.product;
 
     const {
         control,
         handleSubmit,
         formState: { errors }
     } = useForm<TProductFormData>({
-        defaultValues: formDataBuilder.build(),
+        defaultValues: formData,
         resolver: yupResolver(yupValidationSchema)
     });
 
@@ -94,6 +100,18 @@ const ProductForm = ({ product, formFields, submitHandler, onCancelButtonClick }
     );
 }
 
-export default ProductForm
-export { type TProductFormProps };
+const createFormData = (product: BaseProduct): TProductFormData => {
+    return {
+        product,
+        files: {
+            image: null
+        }
+    }
+}
 
+export default ProductForm
+export {
+    type TProductFormData,
+    type TProductFormProps,
+    createFormData
+};

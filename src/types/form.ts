@@ -1,4 +1,3 @@
-import { IFormDataBuilder } from 'helpers/form-builder';
 import {
     Control,
     FieldErrors,
@@ -16,12 +15,11 @@ type TFormFieldProps<TFormData extends FieldValues> = {
 type TFormProps<TFormData extends FieldValues> = {
     submitHandler: SubmitHandler<TFormData>
     formFields: TFormField<TFormData>[]
-    formData?: TFormData,
-    formDataBuilder?: IFormDataBuilder<TFormData>,
+    formData?: TFormData
 }
 
 export {
     type TFormField,
-    type TFormProps,
     type TFormFieldProps,
+    type TFormProps
 };
