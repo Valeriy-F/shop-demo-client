@@ -1,18 +1,10 @@
 import ProductApi from '../api/product-api'
 import { TProductFormData } from '../components/form/product-form'
 import { Product, TBaseProduct, TProduct } from '../model/product'
+import { useAddProductMutation, useEditProductMutation, useUploadImageFileMutation } from '../store/product-api-slice'
+import { disableAddMode, setProductForEdit } from '../store/products-slice'
 import { ModelResponseError } from 'model/error'
-
-type TUseProductAddProps = {
-    afterProductCreatedHook?: (product: TProduct) => void
-    afterImageFileUploadedHook?: (product: TProduct) => void
-}
-
-type TUseProductEditProps = {
-    afterProductUpdatedHook?: (product: TProduct) => void
-    afterImageFileUploadedHook?: (product: TProduct) => void
-    afterAllDataUpdatedHook?: (product: TProduct) => void
-}
+import { useDispatch } from 'store/hooks'
 
 type TUseProductDeleteProps = {
     afterProductDeletedHook?: (product: TBaseProduct) => void
@@ -48,25 +40,27 @@ const useProductFetch = () => {
     }
 }
 
-const useProductAdd = ({ afterProductCreatedHook, afterImageFileUploadedHook }: TUseProductAddProps) => {
+const useProductAdd = () => {
+    const dispatch = useDispatch()
+    const [createProduct] = useAddProductMutation()
+    const [uploadImageFile] = useUploadImageFileMutation()
+
     return async ({ product, files }: TProductFormData) => {
         const imageFile = files.image
 
         let productResponse: TProduct
 
         try {
-            productResponse = await ProductApi.post(product)
+            productResponse = await createProduct(product).unwrap()
 
-            afterProductCreatedHook && afterProductCreatedHook(productResponse)
+            dispatch(disableAddMode())
         } catch (error) {
             throw handleErrorAndCreateException(error, `Fialed to create new product "${product.name}".`)
         }
 
         if (imageFile) {
             try {
-                productResponse = await ProductApi.patchImage(productResponse, imageFile)
-
-                afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse)
+                await uploadImageFile({ product: productResponse, file: imageFile })
             } catch (error) {
                 throw handleErrorAndCreateException(error, `Failed to upload image file "${imageFile}" for product "${product.name}".`)
             }
@@ -74,40 +68,33 @@ const useProductAdd = ({ afterProductCreatedHook, afterImageFileUploadedHook }: 
     }
 }
 
-const useProductEdit = ({ afterAllDataUpdatedHook, afterImageFileUploadedHook, afterProductUpdatedHook }: TUseProductEditProps) => {
+const useProductEdit = () => {
+    const dispatch = useDispatch()
+    const [updateProduct] = useEditProductMutation()
+    const [uploadImageFile] = useUploadImageFileMutation()
+
     return async ({ product, files }: TProductFormData) => {
         const imageFile = files.image
-
-        if (!Product.isTypeOfProduct(product)) {
-            product = Product.create(product)
-        }
+        const productForUpdate = Product.create(product)
 
         const requests = [
-            ProductApi.put(product)
-                .then(productResponse => {
-                    afterProductUpdatedHook && afterProductUpdatedHook(productResponse)
-                })
+            updateProduct(productForUpdate)
                 .catch(error => {
                     throw handleErrorAndCreateException(error, `Failed to update product "${product.name}".`)
                 })
         ]
 
         if (imageFile) {
-            const patchImageRequest = ProductApi.patchImage(product as TProduct, imageFile)
-                .then(productResponse => {
-                    afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse)
-                })
-                .catch(error => {
-                    throw handleErrorAndCreateException(error, `Failed to upload image file "${imageFile.name}" for product "${product.name}".`)
-                })
-
-            requests.push(patchImageRequest)
+            requests.push(
+                uploadImageFile({ product: productForUpdate, file: imageFile })
+                    .catch(error => {
+                        throw handleErrorAndCreateException(error, `Failed to upload image file "${imageFile.name}" for product "${product.name}".`)
+                    })
+            )
         }
 
         return Promise.all(requests).then(responses => {
-            afterAllDataUpdatedHook && afterAllDataUpdatedHook(product as TProduct)
-
-            return responses
+            dispatch(setProductForEdit(null))
         })
     }
 }
@@ -127,18 +114,12 @@ const useProductDelete = ({ afterProductDeletedHook }: TUseProductDeleteProps) =
 
 const useProduct = () => ({
     useProductAdd,
-    useProductDelete,
     useProductEdit,
-    useProductFetch,
-    useProductsFetch,
 })
 
 export default useProduct
 
 export {
     useProductAdd,
-    useProductDelete,
-    useProductEdit,
-    useProductFetch,
-    useProductsFetch
+    useProductEdit
 }

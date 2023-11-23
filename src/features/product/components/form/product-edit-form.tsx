@@ -3,15 +3,21 @@ import {
     DisplayNameProductFormField,
     ImageFileProductFormField,
     PriceProductFormField
-    } from './fields';
-import ProductForm, { createFormData, TProductFormProps } from './product-form';
-import { TProduct } from '../../model/product';
+    } from './fields'
+import ProductForm, { createFormData } from './product-form'
+import { TProduct } from '../../model/product'
+import { useProductEdit } from 'features/product/hooks/use-product'
+import { setProductForEdit } from 'features/product/store/products-slice'
+import { useDispatch } from 'store/hooks'
 
 type TProductEditFormProps = {
-    product: TProduct,
-} & Pick<TProductFormProps, 'submitHandler' | 'onCancelButtonClick'>
+    product: TProduct
+}
 
-export default function ProductEditForm({ product, submitHandler, onCancelButtonClick }: TProductEditFormProps) {
+export default function ProductEditForm({ product }: TProductEditFormProps) {
+    const dispatch = useDispatch()
+    const submitHandler = useProductEdit()
+
     return (
         <ProductForm
             formData={createFormData(product)}
@@ -22,7 +28,11 @@ export default function ProductEditForm({ product, submitHandler, onCancelButton
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
-            onCancelButtonClick={onCancelButtonClick}
+            onCancelButtonClick={event => {
+                event.preventDefault()
+
+                dispatch(setProductForEdit(null))
+            }}
         />
     )
 }

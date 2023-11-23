@@ -7,10 +7,15 @@ import {
     } from './fields'
 import ProductForm, { createFormData, TProductFormProps } from './product-form'
 import { BaseProduct } from '../../model/product'
+import { useProductAdd } from 'features/product/hooks/use-product'
+import { disableAddMode } from 'features/product/store/products-slice'
+import { useDispatch } from 'store/hooks'
 
-type TProductAddFormProps = Pick<TProductFormProps, 'submitHandler' | 'onCancelButtonClick'>
 
-export default function ProductAddForm({ submitHandler, onCancelButtonClick }: TProductAddFormProps) {
+export default function ProductAddForm() {
+    const dispatch = useDispatch()
+    const submitHandler: TProductFormProps['submitHandler'] = useProductAdd()
+
     return (
         <ProductForm
             formData={createFormData(BaseProduct.create())}
@@ -22,9 +27,11 @@ export default function ProductAddForm({ submitHandler, onCancelButtonClick }: T
                 DescriptionProductFormField
             ]}
             submitHandler={submitHandler}
-            onCancelButtonClick={onCancelButtonClick}
+            onCancelButtonClick={event => {
+                event.preventDefault()
+
+                dispatch(disableAddMode())
+            }}
         />
     )
 }
-
-export { type TProductAddFormProps }

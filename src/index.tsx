@@ -1,9 +1,11 @@
-import App from './app'
-import CssBaseline from '@mui/material/CssBaseline'
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { blue, blueGrey, deepOrange } from '@mui/material/colors'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import App from './app';
+import { blue, blueGrey, deepOrange } from '@mui/material/colors';
+import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
+import store from 'store/store';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -45,7 +47,9 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </ThemeProvider>
   </React.StrictMode>
 );

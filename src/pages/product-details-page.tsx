@@ -1,23 +1,33 @@
-import Layout from 'components/layout';
-import { ProductDetails, TProduct, useProductFetch } from 'features/product';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import Error from 'components/error'
+import Layout from 'components/layout'
+import { OverlayLoading } from 'components/ui/loading'
+import { ProductDetails, useGetProductQuery } from 'features/product'
+import { ResponseError } from 'model/error'
+import { useParams } from 'react-router-dom'
 
 export default function ProductDetailsPage() {
-    const routeParams = useParams()
-    const [product, setProduct] = useState<TProduct | null>(null)
-    const [fetchProductError, setFfetchProductError] = useState<Error>()
-    const fetchProduct = useProductFetch()
+    const { name } = useParams()
+    const {
+        data: product,
+        isLoading,
+        isSuccess,
+        isError,
+        error
+    } = useGetProductQuery(name as string)
 
-    useEffect(() => {
-        fetchProduct(routeParams.name as string)
-            .then(setProduct)
-            .catch(setFfetchProductError)
-    }, [routeParams.name])
+    let pageContent;
+
+    if (isLoading) {
+        pageContent = <OverlayLoading />;
+    } else if (isSuccess) {
+        pageContent = <ProductDetails product={product} />
+    } else if (isError) {
+        pageContent = <Error error={ResponseError.create(error)} />
+    }
 
     return (
         <Layout>
-            <ProductDetails product={product} fetchProductError={fetchProductError} />
+            {pageContent}
         </Layout>
     )
 }

@@ -46,7 +46,7 @@ const ProductForm = ({ formData, formFields, submitHandler, onCancelButtonClick 
     }
 
     const actionsData: TCardActionsData = {
-        leftSide: isLoading ? <Loading /> : <Button type='submit' disabled={!isDirty || !isValid}>Save</Button>,
+        leftSide: isLoading ? <Loading /> : <Button type='submit' disabled={!isDirty || !isValid} onClick={event => (!isDirty || !isValid)}>Save</Button>,
     }
 
     if (onCancelButtonClick) {

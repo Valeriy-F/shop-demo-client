@@ -1,42 +1,35 @@
+import Error from 'components/error'
 import Layout from 'components/layout'
+import { OverlayLoading } from 'components/ui/loading'
 import NavigationContext from 'context/navigation-context'
-import {
-    ProductList,
-    TBaseProduct,
-    TProduct,
-    useProduct,
-    useProductsFetch
-    } from 'features/product'
+import { enableAddMode, ProductList, useGetProductsQuery } from 'features/product'
 import { ProductAddButton } from 'features/product/components/ui/product-add-button'
-import { useContext, useEffect, useState } from 'react'
+import { selectProductForEdit } from 'features/product/store/products-slice'
+import { ResponseError } from 'model/error'
+import { useContext } from 'react'
+import { useDispatch, useSelector } from 'store/hooks'
 
 export default function ProductListPage() {
-    const [products, setProducts] = useState<TProduct[]>([])
-    const [fetchProductsError, setFetchProductsError] = useState<Error>()
-    const [isAddMode, setIsAddMode] = useState(false)
-    const [productForEdit, setProductForEdit] = useState<TProduct | null>(null)
+    const {
+        data: products,
+        isLoading,
+        isSuccess,
+        isError,
+        error
+    } = useGetProductsQuery('')
+    const dispatch = useDispatch()
+    const productForEdit = useSelector(selectProductForEdit)
+    const navigationProviderValue = useContext(NavigationContext)
     const isEditMode = (productForEdit !== null)
 
-    const { useProductAdd, useProductEdit, useProductDelete } = useProduct();
-    const fetchProducts = useProductsFetch();
-    const navigationProviderValue = useContext(NavigationContext)
+    let pageContent
 
-    useEffect(() => {
-        fetchProducts()
-            .then(setProducts)
-            .catch(setFetchProductsError)
-    }, [])
-
-    const addProductToList = (product: TProduct) => {
-        setProducts(prevState => [...prevState, product])
-    }
-
-    const updateProductInList = (product: TProduct) => {
-        setProducts(prevState => prevState.map(currentPropduct => (currentPropduct.name === product.name) ? product : currentPropduct))
-    }
-
-    const removeProductFromList = (product: TBaseProduct) => {
-        setProducts(prevState => prevState.filter(currentProduct => (currentProduct.name !== product.name)))
+    if (isLoading) {
+        pageContent = <OverlayLoading />
+    } else if (isSuccess) {
+        pageContent = <ProductList products={products} />
+    } else if (isError) {
+        pageContent = <Error error={ResponseError.create(error)} />
     }
 
     return (
@@ -47,49 +40,13 @@ export default function ProductListPage() {
                 <ProductAddButton
                     key={navigationProviderValue.navigationRightMenuData.length}
                     disabled={isEditMode}
-                    onClick={(event) => !isEditMode && setIsAddMode(true)}
+                    onClick={(event) => !isEditMode && dispatch(enableAddMode())}
                 />
             ]
 
         }}>
             <Layout>
-                <ProductList
-                    products={products}
-                    isAddMode={isAddMode}
-                    productForEdit={productForEdit}
-                    fetchProductsError={fetchProductsError}
-                    productAddFormProps={{
-                        submitHandler: useProductAdd({
-                            afterProductCreatedHook: product => {
-                                addProductToList(product);
-                                setIsAddMode(false);
-                            },
-                            afterImageFileUploadedHook: product => {
-                                updateProductInList(product)
-                            }
-                        }),
-                        onCancelButtonClick: event => {
-                            setIsAddMode(false);
-                        }
-                    }}
-                    productEditFormProps={{
-                        submitHandler: useProductEdit({
-                            afterProductUpdatedHook: updateProductInList,
-                            afterImageFileUploadedHook: updateProductInList,
-                            afterAllDataUpdatedHook: product => setProductForEdit(null)
-                        }),
-                        onCancelButtonClick: event => {
-                            setProductForEdit(null);
-                        }
-                    }}
-                    productViewProps={{
-                        startProductEditProcess: setProductForEdit,
-                        deleteProduct: useProductDelete({
-                            afterProductDeletedHook: removeProductFromList
-                        }),
-                        isAddMode
-                    }}
-                />
+                {pageContent}
             </Layout>
         </NavigationContext.Provider>
     )
