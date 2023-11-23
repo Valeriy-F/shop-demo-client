@@ -1,53 +1,25 @@
-import {
-    BaseProduct,
-    Product,
-    TBaseProduct,
-    TProduct
-    } from '../model/product';
+import { BaseProduct, TBaseProduct, TProduct } from '../model/product';
 import Client from 'api/client';
-
-export type TProductGetAllRequest = typeof GetAll
-export type TProductGetRequest = typeof Get
-export type TProductPostRequest = typeof Post
-export type TProductPutRequest = typeof Put
-export type TProductPatchImageRequest = typeof PatchImage;
-export type TProductDeleteRequest = typeof Delete
 
 const URL = '/products'
 
-const GetAll = async (): Promise<Product[]> => {
-    const products = await Client.Get<TProduct[]>(URL);
-
-    return products.map(product => Product.create(product));
+const GetAll = async (): Promise<TProduct[]> => {
+    return await Client.Get<TProduct[]>(URL);
 }
 
-const Get = async (name: string): Promise<Product> => {
-    const product = await Client.Get<TProduct>(`${URL}/${name}`);
-
-    return Product.create(product);
+const Get = async (name: string): Promise<TProduct> => {
+    return await Client.Get<TProduct>(`${URL}/${name}`);
 }
 
-const Post = async (product: TBaseProduct): Promise<Product> => {
-    if (product instanceof BaseProduct) {
-        product = product.toSimpleObject();
-    }
-
-    const productResponse = await Client.Post<TBaseProduct, TProduct>(URL, product);
-
-    return Product.create(productResponse);
+const Post = async (product: TBaseProduct): Promise<TProduct> => {
+    return await Client.Post<TBaseProduct, TProduct>(URL, BaseProduct.create(product));
 }
 
-const Put = async (product: TBaseProduct): Promise<Product> => {
-    if (product instanceof BaseProduct) {
-        product = product.toSimpleObject()
-    }
-
-    const productResponse = await Client.Put<TBaseProduct, TProduct>(`${URL}/${product.name}`, product);
-
-    return Product.create(productResponse);
+const Put = async (product: TBaseProduct): Promise<TProduct> => {
+    return await Client.Put<TBaseProduct, TProduct>(`${URL}/${product.name}`, BaseProduct.create(product));
 }
 
-const PatchImage = async (product: TProduct, file: File): Promise<Product> => {
+const PatchImage = async (product: TProduct, file: File): Promise<TProduct> => {
     const formData = new FormData();
     formData.append('image', file);
 
@@ -55,7 +27,7 @@ const PatchImage = async (product: TProduct, file: File): Promise<Product> => {
 
     product.files.image = productImageURL;
 
-    return Product.create(product);
+    return product;
 }
 
 const Delete = async (product: TBaseProduct) => {

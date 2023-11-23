@@ -6,14 +6,14 @@ import {
     } from './fields';
 import ProductForm, { createFormData, TProductFormProps } from './product-form';
 import ProductApi from '../../api/product-api';
-import { Product } from '../../model/product';
+import { Product, TProduct } from '../../model/product';
 import { MouseEvent } from 'react';
 
 type TProductEditFormProps = {
-    product: Product,
-    afterProductUpdatedHook?: (product: Product) => void;
-    afterImageFileUploadedHook?: (product: Product) => void;
-    afterAllDataUpdatedHook?: (product: Product) => void;
+    product: TProduct,
+    afterProductUpdatedHook?: (product: TProduct) => void;
+    afterImageFileUploadedHook?: (product: TProduct) => void;
+    afterAllDataUpdatedHook?: (product: TProduct) => void;
     onCancelButtonClick?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void
 }
 
@@ -28,17 +28,18 @@ export default function ProductEditForm(props: TProductEditFormProps) {
 
     const submirHandler: TProductFormProps['submitHandler'] = async ({ product, files }) => {
         const imageFile = files.image;
-        const productForUpdate = (product instanceof Product) ? product : Product.create(product);
+        if (!Product.isTypeOf(product)) {
+            product = Product.create(product);
+        }
+
 
         const requests = [
-            ProductApi.put(productForUpdate)
+            ProductApi.put(product)
                 .then(productResponse => {
-                    productForUpdate.apply(productResponse)
-
-                    afterProductUpdatedHook && afterProductUpdatedHook(productForUpdate);
+                    afterProductUpdatedHook && afterProductUpdatedHook(productResponse);
                 })
                 .catch(error => {
-                    const errorMessage = `Failed to update product "${productForUpdate.name}".`
+                    const errorMessage = `Failed to update product "${product.name}".`
 
                     console.error(errorMessage, error)
 
@@ -47,14 +48,12 @@ export default function ProductEditForm(props: TProductEditFormProps) {
         ]
 
         if (imageFile) {
-            const patchImageRequest = ProductApi.patchImage(productForUpdate, imageFile)
+            const patchImageRequest = ProductApi.patchImage(product as TProduct, imageFile)
                 .then(productResponse => {
-                    productForUpdate.apply(productResponse)
-
-                    afterImageFileUploadedHook && afterImageFileUploadedHook(productForUpdate);
+                    afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse);
                 })
                 .catch(error => {
-                    const errorMessage = `Failed to upload image file "${imageFile.name}" for product "${productForUpdate.name}".`
+                    const errorMessage = `Failed to upload image file "${imageFile.name}" for product "${product.name}".`
 
                     console.error(errorMessage, error)
 
@@ -65,7 +64,7 @@ export default function ProductEditForm(props: TProductEditFormProps) {
         }
 
         return Promise.all(requests).then(responses => {
-            afterAllDataUpdatedHook && afterAllDataUpdatedHook(productForUpdate);
+            afterAllDataUpdatedHook && afterAllDataUpdatedHook(product as TProduct);
 
             return responses
         })

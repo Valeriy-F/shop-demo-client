@@ -1,5 +1,5 @@
 import { yupValidationSchema } from './product-form-validation';
-import { BaseProduct, Product, TBaseProduct } from '../../model/product';
+import { Product, TBaseProduct } from '../../model/product';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button } from '@mui/material';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
@@ -44,7 +44,7 @@ const ProductForm = ({ formData, formFields, submitHandler, onCancelButtonClick 
 
     const mediaData: TCardMediaData = {
         component: 'img',
-        src: (product instanceof Product) ? product.files.image : process.env.PUBLIC_URL + 'images/prodduct-no-foto.webp'
+        src: Product.isTypeOf(product) ? product.files.image : process.env.PUBLIC_URL + 'images/prodduct-no-foto.webp'
     }
 
     const actionsData: TCardActionsData = {
@@ -63,22 +63,6 @@ const ProductForm = ({ formData, formFields, submitHandler, onCancelButtonClick 
     }
 
     const submitHandlerWrapper = async (data: TProductFormData) => {
-        if (data.files) {
-            if (!(data.product instanceof Product) && Product.isTypeOf(data.product)) {
-                const product = new Product();
-                product.apply(data.product);
-
-                data.product = product;
-            }
-        } else {
-            if (!(data.product instanceof BaseProduct) && BaseProduct.isTypeOf(data.product)) {
-                const product = new BaseProduct();
-                product.apply(data.product);
-
-                data.product = product;
-            }
-        }
-
         closeSnackbar()
         setSubmitError(undefined)
         setIsLoading(true)
@@ -99,7 +83,7 @@ const ProductForm = ({ formData, formFields, submitHandler, onCancelButtonClick 
     );
 }
 
-const createFormData = (product: BaseProduct): TProductFormData => {
+const createFormData = (product: TBaseProduct): TProductFormData => {
     return {
         product,
         files: {

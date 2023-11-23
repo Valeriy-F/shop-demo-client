@@ -1,14 +1,14 @@
 import ProductApi from '../../api/product-api';
-import { Product } from '../../model/product';
+import { TBaseProduct } from '../../model/product';
 
 type TProductDeleteHandlerBuilderProps = {
-    afterProductDeletedHook?: (product: Product) => void
+    afterProductDeletedHook?: (product: TBaseProduct) => void
 }
 
 const buildProductDeleteHandler = (props: TProductDeleteHandlerBuilderProps) => {
     const { afterProductDeletedHook } = props
 
-    return async (product: Product) => {
+    return async (product: TBaseProduct) => {
 
         try {
             await ProductApi.delete(product)

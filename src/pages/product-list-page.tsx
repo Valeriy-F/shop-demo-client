@@ -2,15 +2,20 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { Fab } from '@mui/material';
 import Layout from 'components/layout';
 import NavigationContext from 'context/navigation-context';
-import { Product, ProductApi, ProductList } from 'features/product';
+import {
+    ProductApi,
+    ProductList,
+    TBaseProduct,
+    TProduct
+    } from 'features/product';
 import { buildProductDeleteHandler } from 'features/product/components/form/product-delete';
 import { useContext, useEffect, useState } from 'react';
 
 export default function ProductListPage() {
-    const [products, setProducts] = useState<Product[]>([])
+    const [products, setProducts] = useState<TProduct[]>([])
     const [fetchProductsError, setFetchProductsError] = useState<Error>()
     const [isAddMode, setIsAddMode] = useState(false)
-    const [productForEdit, setProductForEdit] = useState<Product | null>(null)
+    const [productForEdit, setProductForEdit] = useState<TProduct | null>(null)
 
     const navigationProviderValue = useContext(NavigationContext)
 
@@ -23,15 +28,15 @@ export default function ProductListPage() {
             })
     }, [])
 
-    const addProductToList = (product: Product) => {
+    const addProductToList = (product: TProduct) => {
         setProducts(prevState => [...prevState, product])
     }
 
-    const updateProductInList = (product: Product) => {
+    const updateProductInList = (product: TProduct) => {
         setProducts(prevState => prevState.map(currentPropduct => (currentPropduct.name === product.name) ? product : currentPropduct))
     }
 
-    const removeProductFromList = (product: Product) => {
+    const removeProductFromList = (product: TBaseProduct) => {
         setProducts(prevState => prevState.filter(currentProduct => (currentProduct.name !== product.name)))
     }
 

@@ -7,12 +7,12 @@ import {
     } from './fields';
 import ProductForm, { createFormData, TProductFormProps } from './product-form';
 import ProductApi from '../../api/product-api';
-import { BaseProduct, Product } from '../../model/product';
+import { BaseProduct, TProduct } from '../../model/product';
 import { MouseEvent } from 'react';
 
 type TProductAddFormProps = {
-    afterProductCreatedHook?: (product: Product) => void;
-    afterImageFileUploadedHook?: (product: Product) => void;
+    afterProductCreatedHook?: (product: TProduct) => void;
+    afterImageFileUploadedHook?: (product: TProduct) => void;
     onCancelButtonClick?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void
 }
 
@@ -26,7 +26,7 @@ export default function ProductAddForm(props: TProductAddFormProps) {
     const submitHandler: TProductFormProps['submitHandler'] = async ({ product, files }) => {
         const imageFile = files.image;
 
-        let productResponse: Product;
+        let productResponse: TProduct;
 
         try {
             productResponse = await ProductApi.post(product);
@@ -57,7 +57,7 @@ export default function ProductAddForm(props: TProductAddFormProps) {
 
     return (
         <ProductForm
-            formData={createFormData(new BaseProduct())}
+            formData={createFormData(BaseProduct.create())}
             formFields={[
                 ImageFileProductFormField,
                 NameProductFormField,

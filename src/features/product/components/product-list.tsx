@@ -1,14 +1,14 @@
 import ProductAddForm, { TProductAddFormProps } from './form/product-add-form';
 import ProductEditForm, { TProductEditFormProps } from './form/product-edit-form';
 import ProductListItemView, { TProductListItemViewProps } from './product-list-item-view';
-import { Product } from '../model/product';
+import { TProduct } from '../model/product';
 import { Grid } from '@mui/material';
 import Error from 'components/error';
 
 type TProductListProps = {
-    products: Product[],
+    products: TProduct[],
     isAddMode: boolean,
-    productForEdit: Product | null,
+    productForEdit: TProduct | null,
     fetchProductsError?: Error,
     productAddFormProps?: TProductAddFormProps,
     productEditFormProps?: Omit<TProductEditFormProps, 'product'>,

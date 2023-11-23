@@ -1,4 +1,4 @@
-import { Product } from '../model/product';
+import { TProduct } from '../model/product';
 import { Delete } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
@@ -6,9 +6,9 @@ import { useConfirm } from 'material-ui-confirm';
 import { useSnackbar } from 'notistack';
 
 type TProductListItemViewProps = {
-    product: Product,
-    startProductEditProcess?: (product: Product) => void,
-    deleteProduct?: (product: Product) => Promise<void>
+    product: TProduct,
+    startProductEditProcess?: (product: TProduct) => void,
+    deleteProduct?: (product: TProduct) => Promise<void>
 }
 
 export default function ProductListItemView(props: TProductListItemViewProps) {
