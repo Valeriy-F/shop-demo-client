@@ -5,8 +5,8 @@ import {
     PriceProductFormField
     } from './fields';
 import ProductForm, { createFormData, TProductFormProps } from './product-form';
-import ProductApi from 'api/product-api';
-import { Product } from 'model/product';
+import ProductApi from '../../api/product-api';
+import { Product } from '../../model/product';
 import { MouseEvent } from 'react';
 
 type TProductEditFormProps = {

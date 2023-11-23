@@ -1,9 +1,9 @@
 import ProductAddForm, { TProductAddFormProps } from './form/product-add-form';
 import ProductEditForm, { TProductEditFormProps } from './form/product-edit-form';
 import ProductListItemView, { TProductListItemViewProps } from './product-list-item-view';
+import { Product } from '../model/product';
 import { Grid } from '@mui/material';
 import Error from 'components/error';
-import { Product } from 'model/product';
 
 type TProductListProps = {
     products: Product[],

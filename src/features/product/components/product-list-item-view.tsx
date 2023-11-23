@@ -1,8 +1,8 @@
+import { Product } from '../model/product';
 import { Delete } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
 import { useConfirm } from 'material-ui-confirm';
-import { Product } from 'model/product';
 import { useSnackbar } from 'notistack';
 
 type TProductListItemViewProps = {

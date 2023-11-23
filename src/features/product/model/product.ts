@@ -1,4 +1,17 @@
-import { TBaseProduct, TProduct, TProductFiles } from 'types/product';
+type TBaseProduct = {
+    name: string,
+    displayName: string,
+    price: number,
+    description?: string;
+};
+
+type TProduct = {
+    files: TProductFiles;
+} & TBaseProduct;
+
+type TProductFiles = {
+    image: string;
+};
 
 class BaseProduct {
     name: string = '';
@@ -72,4 +85,10 @@ class ProductFiles {
     }
 };
 
-export {BaseProduct, Product}
+export {
+    type TBaseProduct,
+    type TProduct,
+    type TProductFiles,
+    BaseProduct,
+    Product
+};

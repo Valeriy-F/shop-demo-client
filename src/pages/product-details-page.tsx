@@ -1,13 +1,11 @@
-import ProductApi from 'api/product-api';
 import Layout from 'components/layout';
-import ProductDetails from 'components/product/product-details';
+import { Product, ProductApi, ProductDetails } from 'features/product';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { TProduct } from 'types/product';
 
 export default function ProductDetailsPage() {
     const routeParams = useParams()
-    const [product, setProduct] = useState<TProduct | null>(null)
+    const [product, setProduct] = useState<Product | null>(null)
     const [fetchProductError, setFfetchProductError] = useState<Error>()
 
     useEffect(() => {

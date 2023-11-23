@@ -1,11 +1,9 @@
 import { Add as AddIcon } from '@mui/icons-material';
 import { Fab } from '@mui/material';
-import ProductApi from 'api/product-api';
 import Layout from 'components/layout';
-import { buildProductDeleteHandler } from 'components/product/form/product-delete';
-import ProductList from 'components/product/product-list';
 import NavigationContext from 'context/navigation-context';
-import { Product } from 'model/product';
+import { Product, ProductApi, ProductList } from 'features/product';
+import { buildProductDeleteHandler } from 'features/product/components/form/product-delete';
 import { useContext, useEffect, useState } from 'react';
 
 export default function ProductListPage() {
@@ -83,7 +81,6 @@ export default function ProductListPage() {
                     }}
                     productEditFormProps={{
                         afterProductUpdatedHook: updateProductInList,
-                        // afterImageFileUploadedHook: updateProductInList,
                         afterAllDataUpdatedHook: product => {
                             setProductForEdit(null);
                         },

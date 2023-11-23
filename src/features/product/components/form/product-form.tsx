@@ -1,15 +1,14 @@
 import { yupValidationSchema } from './product-form-validation';
+import { BaseProduct, Product, TBaseProduct } from '../../model/product';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button } from '@mui/material';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
 import { Loading } from 'components/ui/loading';
 import { Alert } from 'components/ui/notification';
-import { BaseProduct, Product } from 'model/product';
 import { closeSnackbar } from 'notistack';
 import { MouseEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TFormProps } from 'types/form';
-import { TBaseProduct } from 'types/product';
 
 type TProductFormData = {
     product: TBaseProduct,

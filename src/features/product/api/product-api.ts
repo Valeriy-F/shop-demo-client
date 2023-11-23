@@ -1,6 +1,10 @@
-import Client from './client';
-import { BaseProduct, Product } from 'model/product';
-import { TBaseProduct, TProduct } from 'types/product';
+import {
+    BaseProduct,
+    Product,
+    TBaseProduct,
+    TProduct
+    } from '../model/product';
+import Client from 'api/client';
 
 export type TProductGetAllRequest = typeof GetAll
 export type TProductGetRequest = typeof Get

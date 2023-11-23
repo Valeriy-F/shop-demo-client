@@ -1,7 +1,7 @@
+import { TProduct } from '../model/product';
 import { Button, Typography } from '@mui/material';
 import Error from 'components/error';
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
-import { TProduct } from 'types/product';
 
 type TProductDetailsProps = {
     product: TProduct | null,
@@ -19,7 +19,8 @@ const ProductDetails = ({product, fetchProductError}: TProductDetailsProps) => {
 
     const mediaData: TCardMediaData = {
         component: 'img',
-        src: product.files.image as string
+        src: product.files.image as string,
+        height: '500'
     }
 
     const content = (<>
