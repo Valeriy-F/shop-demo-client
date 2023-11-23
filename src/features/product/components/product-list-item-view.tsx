@@ -1,21 +1,26 @@
 import { TProduct } from '../model/product'
+import { useDeleteProductMutation } from '../store/product-api-slice'
+import { selectIsAddMode, selectProductForEdit, setProductForEdit } from '../store/products-slice'
 import { Delete } from '@mui/icons-material'
 import { Button, Typography } from '@mui/material'
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
 import { useConfirm } from 'material-ui-confirm'
 import { useSnackbar } from 'notistack'
-import { useAppStore } from 'store/app-store'
+import { useDispatch, useSelector } from 'store/hooks'
 
 type TProductListItemViewProps = {
     product: TProduct
 }
 
 const ProductListItemView = ({product}: TProductListItemViewProps) => {
-    const {productStore} = useAppStore()
+    const [deleteProduct] = useDeleteProductMutation()
+    const isAddMode = useSelector(selectIsAddMode)
+    const productForEdit = useSelector(selectProductForEdit)
+    const dispatch = useDispatch()
     const { enqueueSnackbar } = useSnackbar()
     const confirm = useConfirm()
 
-    const isProductEditable = !productStore.productForEdit && !productStore.isAddMode
+    const isProductEditable = (!productForEdit) && !isAddMode
 
     const mediaData: TCardMediaData = {
         component: 'img',
@@ -48,7 +53,7 @@ const ProductListItemView = ({product}: TProductListItemViewProps) => {
                 return false
             }
 
-            productStore.enableEditMode(product)
+            dispatch(setProductForEdit(product))
         }}>Edit</Button>,
         rightSide: <Button size="small" color='error' onClick={async (event) => {
             try {
@@ -64,7 +69,7 @@ const ProductListItemView = ({product}: TProductListItemViewProps) => {
             }
 
             try {
-                await productStore.deleteProduct(product)
+                await deleteProduct(product)
             } catch (error: any) {
                 enqueueSnackbar(error.message, {
                     variant: 'error',

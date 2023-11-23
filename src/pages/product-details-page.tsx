@@ -1,15 +1,33 @@
+import Error from 'components/error'
 import Layout from 'components/layout'
-import { ProductDetails } from 'features/product'
+import { OverlayLoading } from 'components/ui/loading'
+import { ProductDetails, useGetProductQuery } from 'features/product'
+import { ResponseError } from 'model/error'
 import { useParams } from 'react-router-dom'
-import { useAppStore } from 'store/app-store'
 
 const ProductDetailsPage = () => {
-    const { productStore } = useAppStore()
-    const routeParams = useParams()
+    const { name } = useParams()
+    const {
+        data: product,
+        isLoading,
+        isSuccess,
+        isError,
+        error
+    } = useGetProductQuery(name as string)
+
+    let pageContent;
+
+    if (isLoading) {
+        pageContent = <OverlayLoading />;
+    } else if (isSuccess) {
+        pageContent = <ProductDetails product={product} />
+    } else if (isError) {
+        pageContent = <Error error={ResponseError.create(error)} />
+    }
 
     return (
         <Layout>
-            <ProductDetails product={productStore.getProduct(routeParams.name as string)} />
+            {pageContent}
         </Layout>
     )
 }

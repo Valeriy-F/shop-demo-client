@@ -91,6 +91,7 @@ const createResponseInfo = (data: any): ResponseInfo => {
 }
 
 const ResponseHandler = {
+    createResponseInfo,
     isResponseInfoType,
 }
 

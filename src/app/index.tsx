@@ -2,8 +2,9 @@ import { Routing } from '../pages'
 import { blue, blueGrey, deepOrange } from '@mui/material/colors'
 import CssBaseline from '@mui/material/CssBaseline'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
-import { AppStoreProvider } from 'store/app-store'
+import store from 'store/store'
 
 const theme = createTheme({
   palette: {
@@ -41,11 +42,11 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppStoreProvider>
+      <Provider store={store}>
         <BrowserRouter>
           <Routing />
         </BrowserRouter>
-      </AppStoreProvider>
+      </Provider>
     </ThemeProvider>
   );
 }

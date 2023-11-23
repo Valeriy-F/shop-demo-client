@@ -5,12 +5,16 @@ import {
     NameProductFormField,
     PriceProductFormField
     } from './fields'
-import ProductForm, { createFormData } from './product-form'
+import ProductForm, { createFormData, TProductFormProps } from './product-form'
 import { BaseProduct } from '../../model/product'
-import { useAppStore } from 'store/app-store'
+import { useProductAdd } from 'features/product/hooks/use-product'
+import { disableAddMode } from 'features/product/store/products-slice'
+import { useDispatch } from 'store/hooks'
+
 
 const ProductAddForm = () => {
-    const {productStore} = useAppStore()
+    const dispatch = useDispatch()
+    const submitHandler: TProductFormProps['submitHandler'] = useProductAdd()
 
     return (
         <ProductForm
@@ -22,13 +26,14 @@ const ProductAddForm = () => {
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
-            submitHandler={productStore.addProduct}
-            onCancelButtonClick={() => {
-                productStore.setIsAddMode(false)
+            submitHandler={submitHandler}
+            onCancelButtonClick={event => {
+                event.preventDefault()
+
+                dispatch(disableAddMode())
             }}
         />
     )
 }
 
 export default ProductAddForm
-

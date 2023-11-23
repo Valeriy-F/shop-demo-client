@@ -6,26 +6,29 @@ import {
     } from './fields'
 import ProductForm, { createFormData } from './product-form'
 import { TProduct } from '../../model/product'
-import { useAppStore } from 'store/app-store'
+import { useProductEdit } from 'features/product/hooks/use-product'
+import { setProductForEdit } from 'features/product/store/products-slice'
+import { useDispatch } from 'store/hooks'
 
 type TProductEditFormProps = {
-    product: TProduct,
+    product: TProduct
 }
 
 const ProductEditForm = ({ product }: TProductEditFormProps) => {
-    const { productStore } = useAppStore()
+    const dispatch = useDispatch()
+    const submitHandler = useProductEdit()
 
     return (
         <ProductForm
             formData={createFormData(product)}
-            submitHandler={productStore.editProduct}
+            submitHandler={submitHandler}
             formFields={[
                 ImageFileProductFormField,
                 DisplayNameProductFormField,
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
-            onCancelButtonClick={() => { productStore.disableEditMode()}}
+            onCancelButtonClick={event => { dispatch(setProductForEdit(null)) }}
         />
     )
 }
