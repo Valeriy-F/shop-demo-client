@@ -3,12 +3,12 @@ import { Fab } from '@mui/material';
 import Layout from 'components/layout';
 import NavigationContext from 'context/navigation-context';
 import {
-    ProductApi,
     ProductList,
     TBaseProduct,
-    TProduct
-    } from 'features/product';
-import { buildProductDeleteHandler } from 'features/product/components/form/product-delete';
+    TProduct,
+    useProduct,
+    useProductsFetch
+} from 'features/product';
 import { useContext, useEffect, useState } from 'react';
 
 export default function ProductListPage() {
@@ -17,15 +17,14 @@ export default function ProductListPage() {
     const [isAddMode, setIsAddMode] = useState(false)
     const [productForEdit, setProductForEdit] = useState<TProduct | null>(null)
 
+    const { useProductAdd, useProductEdit, useProductDelete } = useProduct();
+    const fetchProducts = useProductsFetch();
     const navigationProviderValue = useContext(NavigationContext)
 
     useEffect(() => {
-        ProductApi.getAll()
-            .then(products => setProducts(products))
-            .catch(error => {
-                console.error('Failed to fetch products for product list.', error)
-                setFetchProductsError(error)
-            })
+        fetchProducts()
+            .then(setProducts)
+            .catch(setFetchProductsError)
     }, [])
 
     const addProductToList = (product: TProduct) => {
@@ -72,23 +71,26 @@ export default function ProductListPage() {
                     productForEdit={productForEdit}
                     fetchProductsError={fetchProductsError}
                     productAddFormProps={{
-                        afterProductCreatedHook: product => {
-                            addProductToList(product);
-                            setIsAddMode(false);
-                        },
-                        afterImageFileUploadedHook: product => {
-                            updateProductInList(product)
-                        },
+                        submitHandler: useProductAdd({
+                            afterProductCreatedHook: product => {
+                                addProductToList(product);
+                                setIsAddMode(false);
+                            },
+                            afterImageFileUploadedHook: product => {
+                                updateProductInList(product)
+                            }
+                        }),
                         onCancelButtonClick: event => {
                             event.preventDefault();
                             setIsAddMode(false);
                         }
                     }}
                     productEditFormProps={{
-                        afterProductUpdatedHook: updateProductInList,
-                        afterAllDataUpdatedHook: product => {
-                            setProductForEdit(null);
-                        },
+                        submitHandler: useProductEdit({
+                            afterProductUpdatedHook: updateProductInList,
+                            afterImageFileUploadedHook: updateProductInList,
+                            afterAllDataUpdatedHook: product => setProductForEdit(null)
+                        }),
                         onCancelButtonClick: event => {
                             event.preventDefault();
                             setProductForEdit(null);
@@ -96,7 +98,9 @@ export default function ProductListPage() {
                     }}
                     productViewProps={{
                         startProductEditProcess: setProductForEdit,
-                        deleteProduct: buildProductDeleteHandler({afterProductDeletedHook: removeProductFromList})
+                        deleteProduct: useProductDelete({
+                            afterProductDeletedHook: removeProductFromList
+                        })
                     }}
                 />
             </Layout>

@@ -23,11 +23,7 @@ const PatchImage = async (product: TProduct, file: File): Promise<TProduct> => {
     const formData = new FormData();
     formData.append('image', file);
 
-    const productImageURL = await Client.Patch<FormData, string>(`${URL}/${product.name}/image`, formData);
-
-    product.files.image = productImageURL;
-
-    return product;
+    return await Client.Patch<FormData, TProduct>(`${URL}/${product.name}/image`, formData);
 }
 
 const Delete = async (product: TBaseProduct) => {

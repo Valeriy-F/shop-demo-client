@@ -6,55 +6,11 @@ import {
     PriceProductFormField
     } from './fields';
 import ProductForm, { createFormData, TProductFormProps } from './product-form';
-import ProductApi from '../../api/product-api';
-import { BaseProduct, TProduct } from '../../model/product';
-import { MouseEvent } from 'react';
+import { BaseProduct } from '../../model/product';
 
-type TProductAddFormProps = {
-    afterProductCreatedHook?: (product: TProduct) => void;
-    afterImageFileUploadedHook?: (product: TProduct) => void;
-    onCancelButtonClick?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void
-}
+type TProductAddFormProps = Pick<TProductFormProps, 'submitHandler' | 'onCancelButtonClick'>
 
-export default function ProductAddForm(props: TProductAddFormProps) {
-    const {
-        afterProductCreatedHook,
-        afterImageFileUploadedHook,
-        onCancelButtonClick
-    } = props;
-
-    const submitHandler: TProductFormProps['submitHandler'] = async ({ product, files }) => {
-        const imageFile = files.image;
-
-        let productResponse: TProduct;
-
-        try {
-            productResponse = await ProductApi.post(product);
-
-            afterProductCreatedHook && afterProductCreatedHook(productResponse);
-        } catch (error) {
-            const errorMessage = `Fialed to create new product "${product.name}".`
-
-            console.error(errorMessage, error)
-
-            throw new Error(errorMessage)
-        }
-
-        if (imageFile) {
-            try {
-                await ProductApi.patchImage(productResponse, imageFile);
-
-                afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse)
-            } catch (error) {
-                const errorMessage = `Failed to upload image file "${imageFile}" for product "${product.name}".`
-
-                console.error(errorMessage, error)
-
-                throw new Error(errorMessage)
-            }
-        }
-    }
-
+export default function ProductAddForm({ submitHandler, onCancelButtonClick }: TProductAddFormProps) {
     return (
         <ProductForm
             formData={createFormData(BaseProduct.create())}

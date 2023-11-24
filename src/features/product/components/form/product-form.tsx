@@ -6,7 +6,7 @@ import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/u
 import { Loading } from 'components/ui/loading';
 import { Alert } from 'components/ui/notification';
 import { closeSnackbar } from 'notistack';
-import { MouseEvent, useState } from 'react';
+import { MouseEventHandler, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TFormProps } from 'types/form';
 
@@ -18,7 +18,7 @@ type TProductFormData = {
 }
 
 type TProductFormProps = {
-    onCancelButtonClick?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void
+    onCancelButtonClick?: MouseEventHandler
 } & TFormProps<TProductFormData>
 
 const ProductForm = ({ formData, formFields, submitHandler, onCancelButtonClick }: TProductFormProps) => {

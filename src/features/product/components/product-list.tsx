@@ -10,8 +10,8 @@ type TProductListProps = {
     isAddMode: boolean,
     productForEdit: TProduct | null,
     fetchProductsError?: Error,
-    productAddFormProps?: TProductAddFormProps,
-    productEditFormProps?: Omit<TProductEditFormProps, 'product'>,
+    productAddFormProps: TProductAddFormProps,
+    productEditFormProps: Omit<TProductEditFormProps, 'product'>,
     productViewProps?: Omit<TProductListItemViewProps, 'product'>
 }
 
