@@ -1,25 +1,29 @@
-import { TBaseProduct, TProduct } from '../model/product';
-import { Delete } from '@mui/icons-material';
-import { Button, Typography } from '@mui/material';
-import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
-import { useConfirm } from 'material-ui-confirm';
-import { useSnackbar } from 'notistack';
+import { TBaseProduct, TProduct } from '../model/product'
+import { Delete } from '@mui/icons-material'
+import { Button, Typography } from '@mui/material'
+import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
+import { useConfirm } from 'material-ui-confirm'
+import { useSnackbar } from 'notistack'
 
 type TProductListItemViewProps = {
     product: TProduct,
     startProductEditProcess?: (product: TProduct) => void,
-    deleteProduct?: (product: TBaseProduct) => Promise<void>
+    deleteProduct?: (product: TBaseProduct) => Promise<void>,
+    isAddMode: boolean
 }
 
 export default function ProductListItemView(props: TProductListItemViewProps) {
     const {
         product,
         startProductEditProcess,
-        deleteProduct
+        deleteProduct,
+        isAddMode
     } = props
 
     const { enqueueSnackbar } = useSnackbar()
     const confirm = useConfirm()
+
+    const isProductEditable = startProductEditProcess && !isAddMode
 
     const mediaData: TCardMediaData = {
         component: 'img',
@@ -47,8 +51,11 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
     </>)
 
     const actionsData: TCardActionsData = {
-        leftSide: startProductEditProcess && <Button size="small" onClick={event => {
-            event.preventDefault()
+        leftSide: <Button size="small" disabled={!isProductEditable} onClick={event => {
+            if (!isProductEditable) {
+                return false
+            }
+
             startProductEditProcess(product)
         }}>Edit</Button>,
         rightSide: deleteProduct && <Button size="small" color='error' onClick={async (event) => {

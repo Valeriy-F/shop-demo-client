@@ -1,26 +1,10 @@
-import ApiException from './exceptions/ApiException';
-import ClientErrorException from './exceptions/ClientErrorException';
-import ConflictException from './exceptions/ConflictException';
-import InternalServerErrorException from './exceptions/InternalServerErrorException';
-import NotFoundException from './exceptions/NotFoundException';
-import { ResponseInfo } from './types/TApi';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { ModelResponseError } from 'model/error'
+import { ResponseInfo } from './types/api'
 
 const validateResponseInfo = <T>(responseInfo: ResponseInfo<T>) => {
-    if (responseInfo.status >= 500) {
-        throw new InternalServerErrorException('Somthing went wrong!')
-    }
-
-    if (responseInfo.status === 404) {
-        throw new NotFoundException<T>(responseInfo)
-    }
-
-    if (responseInfo.status === 409) {
-        throw new ConflictException<T>(responseInfo)
-    }
-
     if (responseInfo.status >= 400) {
-        throw new ClientErrorException<T>(responseInfo)
+        throw ModelResponseError.create(responseInfo)
     }
 }
 
@@ -31,13 +15,11 @@ const getResponseData = <T>(responseInfo: ResponseInfo<T>): T => {
 }
 
 const createExceptionByError = (error: any): Error => {
-    console.error(error);
-
-    return (error instanceof ApiException) ? error : new ApiException(`Error occurred during sending request.`, error)
+    return (error instanceof ModelResponseError) ? error : new ModelResponseError(`Error occurred during sending request.`, error)
 }
 
 const client = axios.create({
-    baseURL: 'http://0.0.0.0:3001/api',
+    baseURL: process.env.REACT_APP_API_BASE_URL,
     validateStatus: (status: number) => (status < 600)
 })
 

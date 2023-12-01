@@ -1,5 +1,5 @@
-import { BaseProduct, TBaseProduct, TProduct } from '../model/product';
-import Client from 'api/client';
+import { BaseProduct, TBaseProduct, TProduct } from '../model/product'
+import Client from 'api/client'
 
 const URL = '/products'
 
@@ -31,6 +31,7 @@ const Delete = async (product: TBaseProduct) => {
 }
 
 const ProductApi = {
+    URL,
     getAll: GetAll,
     get: Get,
     post: Post,

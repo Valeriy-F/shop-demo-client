@@ -1,9 +1,10 @@
-import ProductAddForm, { TProductAddFormProps } from './form/product-add-form';
-import ProductEditForm, { TProductEditFormProps } from './form/product-edit-form';
-import ProductListItemView, { TProductListItemViewProps } from './product-list-item-view';
-import { TProduct } from '../model/product';
-import { Grid } from '@mui/material';
-import Error from 'components/error';
+import ProductAddForm, { TProductAddFormProps } from './form/product-add-form'
+import ProductEditForm, { TProductEditFormProps } from './form/product-edit-form'
+import ProductListItemView, { TProductListItemViewProps } from './product-list-item-view'
+import { TProduct } from '../model/product'
+import { Grid } from '@mui/material'
+import Error from 'components/error'
+import { ResponseError } from 'model/error'
 
 type TProductListProps = {
     products: TProduct[],
@@ -12,7 +13,7 @@ type TProductListProps = {
     fetchProductsError?: Error,
     productAddFormProps: TProductAddFormProps,
     productEditFormProps: Omit<TProductEditFormProps, 'product'>,
-    productViewProps?: Omit<TProductListItemViewProps, 'product'>
+    productViewProps: Omit<TProductListItemViewProps, 'product'>
 }
 
 const ProductList = (props: TProductListProps) => {
@@ -27,7 +28,7 @@ const ProductList = (props: TProductListProps) => {
     } = props
 
     if (fetchProductsError) {
-        return <Error error={fetchProductsError} />
+        return <Error error={(fetchProductsError instanceof ResponseError) ? fetchProductsError : ResponseError.create(fetchProductsError)} />
     }
 
     return (
@@ -41,7 +42,7 @@ const ProductList = (props: TProductListProps) => {
 
                 {products.map(product => {
                     if (productForEdit && productForEdit !== product) {
-                        delete productViewProps?.startProductEditProcess;
+                        delete productViewProps.startProductEditProcess;
                     }
 
                     return (

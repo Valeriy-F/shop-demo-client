@@ -1,22 +1,22 @@
-import Card, { TCardProps } from './ui/card';
-import { Typography } from '@mui/material';
-import NotFoundException from 'api/exceptions/NotFoundException';
+import Card, { TCardProps } from './ui/card'
+import { Typography } from '@mui/material'
+import { ResponseError } from 'model/error'
 
 type TErrorProps = {
-    error?: Error | number
+    error: ResponseError
 }
 
 const Error = ({ error }: TErrorProps) => {
     let errorMessage = 'Unknown error occurred'
     let errorDescription = 'Somthing went wrong :-('
 
-    if (error === 404 || error instanceof NotFoundException) {
-        errorMessage = 'Error 404'
-        errorDescription = 'This page is not found.'
+    if (error.status && error.status >= 300 && error.status < 500) {
+        errorMessage = `Error ${error.status}`
+        errorDescription = error.message || error.statusText || errorDescription
     }
 
     const content = (<>
-        <Typography gutterBottom variant="h5" component="div" sx={{
+        <Typography gutterBottom variant="h5" component="div" color='secondary' sx={{
             display: 'flex',
             justifyContent: 'center',
             fontWeight: 'bold'
@@ -25,8 +25,7 @@ const Error = ({ error }: TErrorProps) => {
         </Typography>
         <Typography gutterBottom variant="h6" component="div" sx={{
             display: 'flex',
-            justifyContent: 'center',
-            fontWeight: 'bold'
+            justifyContent: 'center'
         }}>
             {errorDescription}
         </Typography>

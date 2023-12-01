@@ -1,7 +1,9 @@
-import { TProduct } from '../model/product';
-import { Button, Typography } from '@mui/material';
-import Error from 'components/error';
-import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card';
+import { TProduct } from '../model/product'
+import { Typography } from '@mui/material'
+import Error from 'components/error'
+import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
+import { ButtonLink } from 'components/ui/link'
+import { ResponseError } from 'model/error'
 
 type TProductDetailsProps = {
     product: TProduct | null,
@@ -10,7 +12,7 @@ type TProductDetailsProps = {
 
 const ProductDetails = ({product, fetchProductError}: TProductDetailsProps) => {
     if (fetchProductError) {
-        return <Error error={fetchProductError} />
+        return <Error error={(fetchProductError instanceof ResponseError) ? fetchProductError : ResponseError.create(fetchProductError)} />
     }
 
     if (!product) {
@@ -44,7 +46,7 @@ const ProductDetails = ({product, fetchProductError}: TProductDetailsProps) => {
     </>)
 
     const actionsData: TCardActionsData = {
-        leftSide: <Button size="small" href='/products'>Back</Button>,
+        leftSide: <ButtonLink size="small" href='/products'>Back</ButtonLink>
     }
 
     const cardProps: TCardProps = {

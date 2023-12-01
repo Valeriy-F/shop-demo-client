@@ -1,32 +1,39 @@
-import ProductApi from '../api/product-api';
-import { TProductFormData } from '../components/form/product-form';
-import { Product, TBaseProduct, TProduct } from '../model/product';
+import ProductApi from '../api/product-api'
+import { TProductFormData } from '../components/form/product-form'
+import { Product, TBaseProduct, TProduct } from '../model/product'
+import { ModelResponseError } from 'model/error'
 
 type TUseProductAddProps = {
-    afterProductCreatedHook?: (product: TProduct) => void;
-    afterImageFileUploadedHook?: (product: TProduct) => void;
+    afterProductCreatedHook?: (product: TProduct) => void
+    afterImageFileUploadedHook?: (product: TProduct) => void
 }
 
 type TUseProductEditProps = {
-    afterProductUpdatedHook?: (product: TProduct) => void;
-    afterImageFileUploadedHook?: (product: TProduct) => void;
-    afterAllDataUpdatedHook?: (product: TProduct) => void;
+    afterProductUpdatedHook?: (product: TProduct) => void
+    afterImageFileUploadedHook?: (product: TProduct) => void
+    afterAllDataUpdatedHook?: (product: TProduct) => void
 }
 
 type TUseProductDeleteProps = {
-    afterProductDeletedHook?: (product: TBaseProduct) => void;
+    afterProductDeletedHook?: (product: TBaseProduct) => void
+}
+
+const handleErrorAndCreateException = (error: any, extraMessage: string): ModelResponseError => {
+    if (error instanceof ModelResponseError) {
+        return error
+    }
+
+    const modelResponseError = ModelResponseError.create(error)
+
+    return modelResponseError
 }
 
 const useProductsFetch = () => {
     return async () => {
         try {
-            return await ProductApi.getAll();
+            return await ProductApi.getAll()
         } catch (error) {
-            const errorMessage = `Fialed to fetch product list.`;
-
-            console.error(errorMessage, error);
-
-            throw new Error(errorMessage);
+            throw handleErrorAndCreateException(error, `Fialed to fetch product list.`)
         }
     }
 }
@@ -34,113 +41,89 @@ const useProductsFetch = () => {
 const useProductFetch = () => {
     return async (productName: string) => {
         try {
-            return await ProductApi.get(productName);
+            return await ProductApi.get(productName)
         } catch (error) {
-            const errorMessage = `'Failed to fetch product "${productName}".'`;
-
-            console.error(errorMessage, error);
-
-            throw new Error(errorMessage);
+            throw handleErrorAndCreateException(error, `Failed to fetch product "${productName}".`)
         }
-    };
+    }
 }
 
 const useProductAdd = ({ afterProductCreatedHook, afterImageFileUploadedHook }: TUseProductAddProps) => {
     return async ({ product, files }: TProductFormData) => {
-        const imageFile = files.image;
+        const imageFile = files.image
 
-        let productResponse: TProduct;
+        let productResponse: TProduct
 
         try {
-            productResponse = await ProductApi.post(product);
+            productResponse = await ProductApi.post(product)
 
-            afterProductCreatedHook && afterProductCreatedHook(productResponse);
+            afterProductCreatedHook && afterProductCreatedHook(productResponse)
         } catch (error) {
-            const errorMessage = `Fialed to create new product "${product.name}".`;
-
-            console.error(errorMessage, error);
-
-            throw new Error(errorMessage);
+            throw handleErrorAndCreateException(error, `Fialed to create new product "${product.name}".`)
         }
 
         if (imageFile) {
             try {
-                productResponse = await ProductApi.patchImage(productResponse, imageFile);
+                productResponse = await ProductApi.patchImage(productResponse, imageFile)
 
-                afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse);
+                afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse)
             } catch (error) {
-                const errorMessage = `Failed to upload image file "${imageFile}" for product "${product.name}".`;
-
-                console.error(errorMessage, error);
-
-                throw new Error(errorMessage);
+                throw handleErrorAndCreateException(error, `Failed to upload image file "${imageFile}" for product "${product.name}".`)
             }
         }
-    };
-};
+    }
+}
 
 const useProductEdit = ({ afterAllDataUpdatedHook, afterImageFileUploadedHook, afterProductUpdatedHook }: TUseProductEditProps) => {
     return async ({ product, files }: TProductFormData) => {
-        const imageFile = files.image;
+        const imageFile = files.image
 
         if (!Product.isTypeOf(product)) {
-            product = Product.create(product);
+            product = Product.create(product)
         }
 
         const requests = [
             ProductApi.put(product)
                 .then(productResponse => {
-                    afterProductUpdatedHook && afterProductUpdatedHook(productResponse);
+                    afterProductUpdatedHook && afterProductUpdatedHook(productResponse)
                 })
                 .catch(error => {
-                    const errorMessage = `Failed to update product "${product.name}".`;
-
-                    console.error(errorMessage, error);
-
-                    throw new Error(errorMessage);
+                    throw handleErrorAndCreateException(error, `Failed to update product "${product.name}".`)
                 })
-        ];
+        ]
 
         if (imageFile) {
             const patchImageRequest = ProductApi.patchImage(product as TProduct, imageFile)
                 .then(productResponse => {
-                    afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse);
+                    afterImageFileUploadedHook && afterImageFileUploadedHook(productResponse)
                 })
                 .catch(error => {
-                    const errorMessage = `Failed to upload image file "${imageFile.name}" for product "${product.name}".`;
+                    throw handleErrorAndCreateException(error, `Failed to upload image file "${imageFile.name}" for product "${product.name}".`)
+                })
 
-                    console.error(errorMessage, error);
-
-                    throw new Error(errorMessage);
-                });
-
-            requests.push(patchImageRequest);
+            requests.push(patchImageRequest)
         }
 
         return Promise.all(requests).then(responses => {
-            afterAllDataUpdatedHook && afterAllDataUpdatedHook(product as TProduct);
+            afterAllDataUpdatedHook && afterAllDataUpdatedHook(product as TProduct)
 
-            return responses;
-        });
-    };
-};
+            return responses
+        })
+    }
+}
 
 const useProductDelete = ({ afterProductDeletedHook }: TUseProductDeleteProps) => {
     return async (product: TBaseProduct) => {
 
         try {
-            await ProductApi.delete(product);
+            await ProductApi.delete(product)
 
-            afterProductDeletedHook && afterProductDeletedHook(product);
+            afterProductDeletedHook && afterProductDeletedHook(product)
         } catch (error) {
-            const errorMessage = `Failed to delete product "${product.name}".`;
-
-            console.error(errorMessage, error);
-
-            throw new Error(errorMessage);
+            throw handleErrorAndCreateException(error, `Failed to delete product "${product.name}".`)
         }
-    };
-};
+    }
+}
 
 const useProduct = () => ({
     useProductAdd,
@@ -158,4 +141,4 @@ export {
     useProductEdit,
     useProductFetch,
     useProductsFetch
-};
+}

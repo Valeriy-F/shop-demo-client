@@ -1,21 +1,21 @@
-import { Add as AddIcon } from '@mui/icons-material';
-import { Fab } from '@mui/material';
-import Layout from 'components/layout';
-import NavigationContext from 'context/navigation-context';
+import Layout from 'components/layout'
+import NavigationContext from 'context/navigation-context'
 import {
     ProductList,
     TBaseProduct,
     TProduct,
     useProduct,
     useProductsFetch
-} from 'features/product';
-import { useContext, useEffect, useState } from 'react';
+    } from 'features/product'
+import { ProductAddButton } from 'features/product/components/ui/product-add-button'
+import { useContext, useEffect, useState } from 'react'
 
 export default function ProductListPage() {
     const [products, setProducts] = useState<TProduct[]>([])
     const [fetchProductsError, setFetchProductsError] = useState<Error>()
     const [isAddMode, setIsAddMode] = useState(false)
     const [productForEdit, setProductForEdit] = useState<TProduct | null>(null)
+    const isEditMode = (productForEdit !== null)
 
     const { useProductAdd, useProductEdit, useProductDelete } = useProduct();
     const fetchProducts = useProductsFetch();
@@ -44,23 +44,11 @@ export default function ProductListPage() {
             navigationMenuData: navigationProviderValue.navigationMenuData,
             navigationRightMenuData: [
                 ...navigationProviderValue.navigationRightMenuData,
-
-                // Add new product button
-                <Fab
+                <ProductAddButton
                     key={navigationProviderValue.navigationRightMenuData.length}
-                    size='medium'
-                    color="secondary"
-                    aria-label="add"
-                    onClick={(event) => {
-                        event.preventDefault()
-                        setIsAddMode(true)
-                    }}
-                    sx={{
-                        boxShadow: 0
-                    }}
-                >
-                    <AddIcon />
-                </Fab>
+                    disabled={isEditMode}
+                    onClick={(event) => !isEditMode && setIsAddMode(true)}
+                />
             ]
 
         }}>
@@ -100,7 +88,8 @@ export default function ProductListPage() {
                         startProductEditProcess: setProductForEdit,
                         deleteProduct: useProductDelete({
                             afterProductDeletedHook: removeProductFromList
-                        })
+                        }),
+                        isAddMode
                     }}
                 />
             </Layout>
