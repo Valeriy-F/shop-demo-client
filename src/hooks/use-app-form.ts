@@ -4,15 +4,15 @@ import {
     FieldPath,
     FieldValues,
     SubmitHandler,
-    useForm,
-    UseFormProps
-    } from 'react-hook-form'
+    UseFormProps,
+    useForm
+} from 'react-hook-form'
 
 type TUseAppFormProps<TFormData extends FieldValues> = {
     submitHandler: SubmitHandler<TFormData>
 } & UseFormProps<TFormData>
 
-const useAppFrom = <TFormData extends FieldValues>(props: TUseAppFormProps<TFormData>) => {
+const useAppForm = <TFormData extends FieldValues>(props: TUseAppFormProps<TFormData>) => {
     const { enqueueSnackbar } = useSnackbar()
 
     const {
@@ -77,5 +77,5 @@ const useAppFrom = <TFormData extends FieldValues>(props: TUseAppFormProps<TForm
     }
 }
 
-export { useAppFrom }
+export { useAppForm }
 

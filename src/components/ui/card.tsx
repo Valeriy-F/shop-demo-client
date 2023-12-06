@@ -1,4 +1,4 @@
-import { Link } from './link';
+import { Link } from './link'
 import {
     Box,
     Card as MuiCard,
@@ -6,8 +6,8 @@ import {
     CardActions,
     CardContent,
     CardMedia
-    } from '@mui/material';
-import { ReactNode } from 'react';
+    } from '@mui/material'
+import { ReactNode } from 'react'
 
 type TCardMediaData = {
     component: 'img' | 'video' | 'audio' | 'picture' | 'iframe',
@@ -38,21 +38,18 @@ const Card = (props: TCardProps) => {
         mediaData
     } = props
 
-    const cardMediaBlock = mediaData ? <CardMedia
-        component={mediaData.component}
-        image={mediaData.src}
-        height={mediaData.height || '240'}
-        alt={mediaData.alt}
-    /> : <></>
-
-    const cardContent = <CardContent>{content}</CardContent>
-    const cardBodyGuts = (
-        <>
-            {cardMediaBlock}
-            {beforeContent}
-            {cardContent}
-        </>
-    )
+    const cardBodyGuts = (<>
+        {mediaData && (
+            <CardMedia
+                component={mediaData.component}
+                image={mediaData.src}
+                height={mediaData.height || '240'}
+                alt={mediaData.alt}
+            />
+        )}
+        {beforeContent}
+        <CardContent>{content}</CardContent>
+    </>)
 
     const cardBody = actionAreaUrl
         ? (
@@ -74,22 +71,6 @@ const Card = (props: TCardProps) => {
         )
         : (<>{cardBodyGuts}</>)
 
-    let actionsBlock = <></>
-
-    if (actionsData) {
-        actionsBlock = (
-            <CardActions sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '8px 16px'
-            }}>
-                <Box>{actionsData.leftSide}</Box>
-                <Box>{actionsData.rightSide}</Box>
-            </CardActions>
-        )
-    }
-
     return (
         <MuiCard sx={{
             height: '100%',
@@ -99,7 +80,17 @@ const Card = (props: TCardProps) => {
             borderRadius: '6px'
         }}>
             {cardBody}
-            {actionsBlock}
+            {actionsData && (
+                <CardActions sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '8px 16px'
+                }}>
+                    <Box>{actionsData.leftSide}</Box>
+                    <Box>{actionsData.rightSide}</Box>
+                </CardActions>
+            )}
         </MuiCard>
     )
 }

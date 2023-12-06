@@ -1,14 +1,14 @@
-import { yupValidationSchema } from './product-form-validation'
-import { Product, TBaseProduct } from '../../model/product'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Button, Typography } from '@mui/material'
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
 import { Loading } from 'components/ui/loading'
 import { Alert } from 'components/ui/notification'
-import { useAppFrom } from 'hooks/use-app-form'
+import { useAppForm } from 'hooks/use-app-form'
 import { useConfirm } from 'material-ui-confirm'
 import { MouseEventHandler } from 'react'
 import { TFormProps } from 'types/form'
+import { Product, TBaseProduct } from '../../model/product'
+import { yupValidationSchema } from './product-form-validation'
 
 type TProductFormData = {
     product: TBaseProduct,
@@ -30,7 +30,7 @@ const ProductForm = ({ formData, formFields, submitHandler, onCancelButtonClick 
         errors,
         submitHandler: wrappedSubmitHandler,
         formState: { isLoading, isDirty, isValid }
-    } = useAppFrom<TProductFormData>({
+    } = useAppForm<TProductFormData>({
         defaultValues: formData,
         resolver: yupResolver(yupValidationSchema),
         submitHandler
@@ -94,7 +94,7 @@ const createFormData = (product: TBaseProduct): TProductFormData => {
 
 export default ProductForm
 export {
-    type TProductFormData,
-    type TProductFormProps,
-    createFormData,
+    createFormData, type TProductFormData,
+    type TProductFormProps
 }
+

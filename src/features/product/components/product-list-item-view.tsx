@@ -59,8 +59,6 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
             startProductEditProcess(product)
         }}>Edit</Button>,
         rightSide: deleteProduct && <Button size="small" color='error' onClick={async (event) => {
-            event.preventDefault()
-
             try {
                 await confirm({
                     title: `Delete product ${product.displayName}?`,

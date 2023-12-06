@@ -69,7 +69,6 @@ export default function ProductListPage() {
                             }
                         }),
                         onCancelButtonClick: event => {
-                            event.preventDefault();
                             setIsAddMode(false);
                         }
                     }}
@@ -80,7 +79,6 @@ export default function ProductListPage() {
                             afterAllDataUpdatedHook: product => setProductForEdit(null)
                         }),
                         onCancelButtonClick: event => {
-                            event.preventDefault();
                             setProductForEdit(null);
                         }
                     }}

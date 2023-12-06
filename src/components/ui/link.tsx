@@ -5,38 +5,38 @@ import {
     LinkProps,
     useTheme
     } from '@mui/material'
-import { forwardRef, ReactNode } from 'react'
+import { forwardRef } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 
-type TLinkProps = {
-    children: ReactNode,
-    href: string,
-} & LinkProps
+type TLinkProps = LinkProps
 
-type TNavLinkProps = {
+type TNavLinkProps = TLinkProps & {
     isActive?: boolean
-} & TLinkProps
-
-const LinkBehavior = forwardRef<any, Omit<TLinkProps, 'href'>>(
-  (props, ref) => <Link ref={ref} href="/" {...props} role={undefined} />,
-);
-
-const Link = (props: TLinkProps) => {
-    const {children, href, ...otherProps} = props;
-
-    return (
-        <MuiLink
-            component={RouterLink}
-            to={href}
-            sx={{
-                textDecoration: 'none'
-            }}
-            {...otherProps}
-        >
-            {children}
-        </MuiLink>
-    )
 }
+
+const LinkBehavior = forwardRef<any, TLinkProps>(
+    (props, ref) => <Link ref={ref} href="/" {...props} role={undefined} />
+)
+
+const Link = forwardRef<any, TLinkProps>(
+    (props, ref) => {
+        const {children, href, ...otherProps} = props
+
+        return (
+            <MuiLink
+                ref={ref}
+                component={RouterLink}
+                to={href}
+                sx={{
+                    textDecoration: 'none'
+                }}
+                {...otherProps}
+            >
+                {children}
+            </MuiLink>
+        )
+    }
+)
 
 const NavLink = (props: TNavLinkProps) => {
     const {children, href, isActive, ...otherProps } = props

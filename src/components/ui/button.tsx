@@ -1,18 +1,13 @@
-import { Close } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import { MouseEventHandler } from 'react';
+import { Close } from '@mui/icons-material'
+import { IconButton, IconButtonProps } from '@mui/material'
 
-type TIconCloseProps = {
-    handleClick: MouseEventHandler
-}
-
-const IconClose = ({ handleClick }: TIconCloseProps) => {
+const IconClose = ({ onClick }: IconButtonProps) => {
     return (
         <IconButton
             aria-label="close"
             color="inherit"
             size="small"
-            onClick={handleClick}
+            onClick={onClick}
         >
             <Close fontSize="inherit" />
         </IconButton>

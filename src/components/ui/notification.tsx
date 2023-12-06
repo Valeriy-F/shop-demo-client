@@ -1,10 +1,10 @@
-import { IconClose } from './button';
+import { IconClose } from './button'
 import {
     CheckCircleOutline,
     ErrorOutline,
     InfoOutlined,
     WarningAmber
-    } from '@mui/icons-material';
+    } from '@mui/icons-material'
 import {
     Alert as MuiAlert,
     AlertColor,
@@ -12,21 +12,24 @@ import {
     AlertTitle,
     Box,
     Collapse
-    } from '@mui/material';
-import { closeSnackbar, SnackbarKey, SnackbarProvider as MuiSnackbarProvider } from 'notistack';
-import { ReactNode, useState } from 'react';
+    } from '@mui/material'
+import {
+    closeSnackbar,
+    SnackbarKey,
+    SnackbarProvider as MuiSnackbarProvider,
+    SnackbarProviderProps
+    } from 'notistack'
+import { ReactNode, useState } from 'react'
 
 type TAlert = AlertColor
 
-type TAlertProps = {
+type TAlertProps = AlertProps & {
     type: TAlert,
     text: string,
     title?: string
-} & AlertProps
-
-type TSnackbarProviderProps = {
-    children: ReactNode | ReactNode[]
 }
+
+type TSnackbarProviderProps = Pick<SnackbarProviderProps, 'children'>
 
 const Alert = (props: TAlertProps) => {
     const {
@@ -42,7 +45,7 @@ const Alert = (props: TAlertProps) => {
             <Collapse in={open}>
                 <MuiAlert
                     severity={type}
-                    action={<IconClose handleClick={() => setOpen(false)} />}
+                    action={<IconClose onClick={() => setOpen(false)} />}
                     {...props}
                 >
                     {title && <AlertTitle>{title}</AlertTitle>}
@@ -72,7 +75,7 @@ const SnackbarProvider = ({ children }: TSnackbarProviderProps) => {
                 info: <IconWrapper><InfoOutlined /></IconWrapper>,
             }}
             action={(snackbarId: SnackbarKey | undefined) => (
-                <IconClose handleClick={() => closeSnackbar(snackbarId)} />
+                <IconClose onClick={() => closeSnackbar(snackbarId)} />
             )}
             anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
             TransitionProps={{ direction: 'down' }}
