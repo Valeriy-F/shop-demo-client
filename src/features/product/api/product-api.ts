@@ -1,6 +1,8 @@
 import { BaseProduct, TBaseProduct, TProduct } from '../model/product'
 import Client from 'api/client'
 
+type TProductApi = typeof ProductApi
+
 const URL = '/products'
 
 const GetAll = async (): Promise<TProduct[]> => {
@@ -19,7 +21,7 @@ const Put = async (product: TBaseProduct): Promise<TProduct> => {
     return await Client.Put<TBaseProduct, TProduct>(`${URL}/${product.name}`, BaseProduct.create(product));
 }
 
-const PatchImage = async (product: TProduct, file: File): Promise<TProduct> => {
+const PatchImage = async (product: TBaseProduct, file: File): Promise<TProduct> => {
     const formData = new FormData();
     formData.append('image', file);
 
@@ -41,3 +43,5 @@ const ProductApi = {
 }
 
 export default ProductApi
+
+export { type TProductApi }

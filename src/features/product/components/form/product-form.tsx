@@ -1,3 +1,5 @@
+import { yupValidationSchema } from './product-form-validation'
+import { Product, TBaseProduct } from '../../model/product'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Button, Typography } from '@mui/material'
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
@@ -7,8 +9,6 @@ import { useAppForm } from 'hooks/use-app-form'
 import { useConfirm } from 'material-ui-confirm'
 import { MouseEventHandler } from 'react'
 import { TFormProps } from 'types/form'
-import { Product, TBaseProduct } from '../../model/product'
-import { yupValidationSchema } from './product-form-validation'
 
 type TProductFormData = {
     product: TBaseProduct,
@@ -42,7 +42,7 @@ const ProductForm = ({ formData, formFields, submitHandler, onCancelButtonClick 
 
     const mediaData: TCardMediaData = {
         component: 'img',
-        src: Product.isTypeOf(product) ? product.files.image : process.env.PUBLIC_URL + 'images/prodduct-no-foto.webp'
+        src: (product && Product.isTypeOfProduct(product)) ? product.files.image : process.env.PUBLIC_URL + 'images/prodduct-no-foto.webp'
     }
 
     const actionsData: TCardActionsData = {

@@ -2,123 +2,96 @@ type TBaseProduct = {
     name: string,
     displayName: string,
     price: number,
-    description?: string;
-};
+    description: string | null | undefined
+}
 
-type TProduct = {
-    files: TProductFiles;
-} & TBaseProduct;
+type TProduct = TBaseProduct & {
+    files: TProductFiles
+}
 
 type TProductFiles = {
-    image: string;
-};
+    image: string
+}
 
-class BaseProduct {
-    protected name: string = '';
-    protected displayName: string = '';
-    protected price: number = 0;
-    protected description?: string;
+const isTypeOfProductFiles = (object: any): object is TProductFiles => {
+    return ('image' in object)
+}
 
-    static create(): TBaseProduct;
-    static create(object: TBaseProduct): TBaseProduct;
-    static create(object?: TBaseProduct): TBaseProduct {
-        const newInstance = new BaseProduct();
+const isTypeOfBaseProduct = (object: object, strict = false): object is TBaseProduct => {
+    let isBaseProduct = ('name' in object)
+        && ('displayName' in object)
+        && ('price' in object)
+        && ('description' in object)
 
-        if (object) {
-            newInstance.apply(object);
-        }
-
-        return newInstance.toSimpleObject();
+    if (strict) {
+        isBaseProduct = isBaseProduct && Object.keys.length === 4
     }
 
-    static isTypeOf(object: any): object is TBaseProduct {
-        return ('name' in object)
-            && ('displayName' in object)
-            && ('price' in object);
+    return isBaseProduct
+}
+
+const isTypeOfProduct = (object: object, strict = false): object is TProduct => {
+    let isTypeOfProduct = isTypeOfBaseProduct(object)
+        && ('files' in object)
+        && isTypeOfProductFiles(object.files)
+
+    if (strict) {
+        isTypeOfProduct = isTypeOfProduct && Object.keys.length === 5
     }
 
-    protected apply(object: TBaseProduct) {
-        this.name = object.name;
-        this.displayName = object.displayName;
-        this.price = object.price;
-        this.description = object.description;
-    }
+    return isTypeOfProduct
+}
 
-    protected toSimpleObject(): TBaseProduct {
-        return {
-            name: this.name,
-            displayName: this.displayName,
-            price: this.price,
-            description: this.description
-        }
-    }
-};
+const applyProduct = <T extends TBaseProduct>(targetProduct: T, sourceProduct: T) => {
+    targetProduct.name = sourceProduct.name
+    targetProduct.displayName = sourceProduct.displayName
+    targetProduct.price = sourceProduct.price
+    targetProduct.description = sourceProduct.description
 
-class Product extends BaseProduct {
-    files: ProductFiles = new ProductFiles();
-
-    static create(): TProduct;
-    static create(object: TBaseProduct): TProduct;
-    static create(object?: TBaseProduct): TProduct {
-        const newInstance = new Product();
-
-        if (object) {
-            newInstance.apply(object);
-        }
-
-        return newInstance.toSimpleObject();
-    }
-
-    static isTypeOf(object: any): object is TProduct {
-        return BaseProduct.isTypeOf(object)
-            && ('files' in object)
-    }
-
-    apply(object: TBaseProduct) {
-        super.apply(object)
-
-        if (Product.isTypeOf(object)) {
-            this.files.apply(object.files)
-        }
-    }
-
-    protected toSimpleObject(): TProduct {
-        return {
-            ...super.toSimpleObject(),
-            files: this.files.toSimpleObject()
-        };
+    if (isTypeOfProduct(targetProduct) && isTypeOfProduct(sourceProduct)) {
+        targetProduct.files = sourceProduct.files
     }
 }
 
-class ProductFiles {
-    private image: string = '';
-
-    static isTypeOf(object: any): object is TProductFiles {
-        return ('image' in object);
+const createBaseProduct = (sourceProduct?: TBaseProduct): TBaseProduct => {
+    const product = {
+        name: '',
+        displayName: '',
+        price: 0,
+        description: ''
     }
 
-    static create(): TProductFiles;
-    static create(object: TProductFiles): TProductFiles;
-    static create(object?: TProductFiles): TProductFiles {
-        const newInstance = new ProductFiles();
-
-        if (object) {
-            newInstance.apply(object);
-        }
-
-        return newInstance.toSimpleObject();
+    if (sourceProduct) {
+        applyProduct(product, sourceProduct)
     }
 
-    apply(object: TProductFiles) {
-        this.image = object.image;
-    }
+    return product
+}
 
-    toSimpleObject(): TProductFiles {
-        return {
-            image: this.image
+const createProduct = (sourceProduct?: TBaseProduct): TProduct => {
+    const product = {
+        ...createBaseProduct(),
+        files: {
+            image: ''
         }
     }
-};
+
+    if (sourceProduct) {
+        applyProduct(product, sourceProduct)
+    }
+
+    return product
+}
+
+const BaseProduct = {
+    create: createBaseProduct,
+    isTypeOfBaseProduct
+}
+
+const Product = {
+    create: createProduct,
+    isTypeOfProduct
+}
 
 export {
     type TBaseProduct,
@@ -126,4 +99,4 @@ export {
     type TProductFiles,
     BaseProduct,
     Product
-};
+}
