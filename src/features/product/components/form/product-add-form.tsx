@@ -4,9 +4,9 @@ import {
     ImageFileProductFormField,
     NameProductFormField,
     PriceProductFormField
-    } from './fields';
-import ProductForm, { createFormData, TProductFormProps } from './product-form';
-import { BaseProduct } from '../../model/product';
+    } from './fields'
+import ProductForm, { createFormData, TProductFormProps } from './product-form'
+import { BaseProduct } from '../../model/product'
 
 type TProductAddFormProps = Pick<TProductFormProps, 'submitHandler' | 'onCancelButtonClick'>
 

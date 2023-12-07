@@ -78,7 +78,7 @@ const useProductEdit = ({ afterAllDataUpdatedHook, afterImageFileUploadedHook, a
     return async ({ product, files }: TProductFormData) => {
         const imageFile = files.image
 
-        if (!Product.isTypeOf(product)) {
+        if (!Product.isTypeOfProduct(product)) {
             product = Product.create(product)
         }
 
