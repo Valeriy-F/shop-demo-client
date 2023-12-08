@@ -1,60 +1,39 @@
-import ProductAddForm, { TProductAddFormProps } from './form/product-add-form'
-import ProductEditForm, { TProductEditFormProps } from './form/product-edit-form'
-import ProductListItemView, { TProductListItemViewProps } from './product-list-item-view'
+import ProductAddForm from './form/product-add-form'
+import ProductEditForm from './form/product-edit-form'
+import ProductListItemView from './product-list-item-view'
 import { TProduct } from '../model/product'
+import { selectIsAddMode, selectProductForEdit } from '../store/products-slice'
 import { Grid } from '@mui/material'
-import Error from 'components/error'
-import { ResponseError } from 'model/error'
+import { useSelector } from 'store/hooks'
 
 type TProductListProps = {
-    products: TProduct[],
-    isAddMode: boolean,
-    productForEdit: TProduct | null,
-    fetchProductsError?: Error,
-    productAddFormProps: TProductAddFormProps,
-    productEditFormProps: Omit<TProductEditFormProps, 'product'>,
-    productViewProps: Omit<TProductListItemViewProps, 'product'>
+    products: TProduct[]
 }
 
-const ProductList = (props: TProductListProps) => {
-    const {
-        products,
-        isAddMode,
-        productForEdit,
-        fetchProductsError,
-        productAddFormProps,
-        productEditFormProps,
-        productViewProps
-    } = props
-
-    if (fetchProductsError) {
-        return <Error error={(fetchProductsError instanceof ResponseError) ? fetchProductsError : ResponseError.create(fetchProductsError)} />
-    }
+const ProductList = ({ products }: TProductListProps) => {
+    const isAddMode = useSelector(selectIsAddMode)
+    const productForEdit = useSelector(selectProductForEdit)
 
     return (
-        <div>
-            <Grid container spacing={4} alignItems='stretch'>
-                {isAddMode &&
-                    <Grid item xs={12} md={6} lg={4} >
-                        <ProductAddForm {...productAddFormProps} />
+        <Grid container spacing={4} alignItems='stretch'>
+            {isAddMode &&
+                <Grid item xs={12} md={6} lg={4} >
+                    <ProductAddForm />
+                </Grid>
+            }
+
+            {products.map(product => {
+                const isProductForEdit = (productForEdit && productForEdit.name === product.name)
+
+                return (
+                    <Grid item xs={12} md={6} lg={4} key={product.name} >
+                        {isProductForEdit
+                            ? <ProductEditForm product={product} />
+                            : <ProductListItemView product={product} />}
                     </Grid>
-                }
-
-                {products.map(product => {
-                    if (productForEdit && productForEdit !== product) {
-                        delete productViewProps.startProductEditProcess;
-                    }
-
-                    return (
-                        <Grid item xs={12} md={6} lg={4} key={product.name} >
-                            {(productForEdit === product)
-                                ? <ProductEditForm product={product} {...productEditFormProps} />
-                                : <ProductListItemView product={product} {...productViewProps} />}
-                        </Grid>
-                    )
-                })}
-            </Grid>
-        </div>
+                )
+            })}
+        </Grid>
     )
 }
 

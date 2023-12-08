@@ -1,29 +1,26 @@
-import { TBaseProduct, TProduct } from '../model/product'
+import { TProduct } from '../model/product'
+import { useDeleteProductMutation } from '../store/product-api-slice'
+import { selectIsAddMode, selectProductForEdit, setProductForEdit } from '../store/products-slice'
 import { Delete } from '@mui/icons-material'
 import { Button, Typography } from '@mui/material'
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
 import { useConfirm } from 'material-ui-confirm'
 import { useSnackbar } from 'notistack'
+import { useDispatch, useSelector } from 'store/hooks'
 
 type TProductListItemViewProps = {
-    product: TProduct,
-    startProductEditProcess?: (product: TProduct) => void,
-    deleteProduct?: (product: TBaseProduct) => Promise<void>,
-    isAddMode: boolean
+    product: TProduct
 }
 
-export default function ProductListItemView(props: TProductListItemViewProps) {
-    const {
-        product,
-        startProductEditProcess,
-        deleteProduct,
-        isAddMode
-    } = props
-
+export default function ProductListItemView({ product }: TProductListItemViewProps) {
+    const [deleteProduct] = useDeleteProductMutation()
+    const isAddMode = useSelector(selectIsAddMode)
+    const productForEdit = useSelector(selectProductForEdit)
+    const dispatch = useDispatch()
     const { enqueueSnackbar } = useSnackbar()
     const confirm = useConfirm()
 
-    const isProductEditable = startProductEditProcess && !isAddMode
+    const isProductEditable = (!productForEdit) && !isAddMode
 
     const mediaData: TCardMediaData = {
         component: 'img',
@@ -56,9 +53,9 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
                 return false
             }
 
-            startProductEditProcess(product)
+            dispatch(setProductForEdit(product))
         }}>Edit</Button>,
-        rightSide: deleteProduct && <Button size="small" color='error' onClick={async (event) => {
+        rightSide: <Button size="small" color='error' onClick={async (event) => {
             try {
                 await confirm({
                     title: `Delete product ${product.displayName}?`,
@@ -92,5 +89,5 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
     return <Card {...cardProps} />
 }
 
-export { type TProductListItemViewProps };
+export { type TProductListItemViewProps }
 

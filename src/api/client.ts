@@ -8,6 +8,8 @@ const validateResponseInfo = <T>(responseInfo: ResponseInfo<T>) => {
     }
 }
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 const getResponseData = <T>(responseInfo: ResponseInfo<T>): T => {
     validateResponseInfo<T>(responseInfo)
 
