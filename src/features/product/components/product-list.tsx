@@ -6,7 +6,7 @@ import Error from 'components/error'
 import { OverlayLoading } from 'components/ui/loading'
 import { observer } from 'mobx-react-lite'
 import { ModelResponseError } from 'model/error'
-import { useAppStore } from 'store/store'
+import { useAppStore } from 'store/app-store'
 
 const ProductList = () => {
     const { productStore: {

@@ -1,58 +1,66 @@
-import { ProductStore, TProductSore } from 'features/product/store/product-store'
-import { ModelResponseError } from 'model/error'
 import {
-    PropsWithChildren,
-    createContext,
-    useContext,
-    useEffect
-} from 'react'
+    createProductStore,
+    createProductStoreEnv,
+    ProductStore,
+    TProductStoreEnv
+    } from 'features/product/store/product-store'
+import {
+    castToSnapshot,
+    getEnv,
+    Instance,
+    types
+    } from 'mobx-state-tree'
+import { createContext, PropsWithChildren, useContext } from 'react'
 
-type TAppStore = {
-    productStore: TProductSore
+type TAppStore = Instance<typeof AppStore>
+
+type TAppStoreEnv = {
+    productStoreEnv: TProductStoreEnv
 }
 
 type TAppStoreProviderProps = PropsWithChildren
 
-type TLoadingInfo = {
-    state: ELoadingState,
-    error: ModelResponseError | null
-}
+const AppStore = types
+    .model('AppStore', {
+        productStore: ProductStore
+    })
+    .views(self => ({
+        get productStoreEnv(): TProductStoreEnv {
+            return getEnv(self).productStoreEnv
+        }
+    }))
+    .actions(self => {
+        return {
+            afterCreate() {
+                self.productStore.loadProducts()
+            }
+        }
+    })
 
-enum ELoadingState {
-    Pending,
-    Success,
-    Error
-}
+const appStore = AppStore.create(
+        {
+            productStore: castToSnapshot(createProductStore())
+        },
+        {
+            productStoreEnv: createProductStoreEnv()
+        }
+    )
 
-const AppStoreContext = createContext<TAppStore | null>(null)
+const AppStoreContext = createContext<TAppStore>(appStore)
 
 const AppStoreProvider = ({ children }: TAppStoreProviderProps) => {
-    const appStore = {
-        productStore: ProductStore()
-    }
-
-    useEffect(() => {
-        appStore.productStore.loadProducts()
-    }, [])
-
     return (
-        <AppStoreContext.Provider value={ appStore } >
+        <AppStoreContext.Provider value= { appStore } >
             { children }
         </AppStoreContext.Provider>
     )
 }
 
-const useAppStore = (): TAppStore => {
-    const appStore = useContext(AppStoreContext)
-
-    if (!appStore) {
-        throw new Error('App store is not found. Check you call it inside AppStoreProvider')
-    }
-
-    return appStore
-}
+const useAppStore = () => useContext(AppStoreContext)
 
 export {
-    AppStoreProvider, ELoadingState, useAppStore, type TLoadingInfo
+    type TAppStore,
+    type TAppStoreEnv,
+    AppStoreProvider,
+    useAppStore
 }
-

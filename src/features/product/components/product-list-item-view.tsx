@@ -1,12 +1,11 @@
-import { TProduct } from '../model/product'
 import { Delete } from '@mui/icons-material'
 import { Button, Typography } from '@mui/material'
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
 import { useConfirm } from 'material-ui-confirm'
-import { runInAction } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { useSnackbar } from 'notistack'
-import { useAppStore } from 'store/store'
+import { useAppStore } from 'store/app-store'
+import { TProduct } from '../model/product'
 
 type TProductListItemViewProps = {
     product: TProduct
@@ -50,9 +49,7 @@ const ProductListItemView = ({product}: TProductListItemViewProps) => {
                 return false
             }
 
-            runInAction(() => {
-                productStore.productForEdit = product
-            })
+            productStore.enableEditMode(product)
         }}>Edit</Button>,
         rightSide: <Button size="small" color='error' onClick={async (event) => {
             try {
