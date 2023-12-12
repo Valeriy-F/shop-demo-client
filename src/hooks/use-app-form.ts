@@ -4,9 +4,9 @@ import {
     FieldPath,
     FieldValues,
     SubmitHandler,
-    UseFormProps,
-    useForm
-} from 'react-hook-form'
+    useForm,
+    UseFormProps
+    } from 'react-hook-form'
 
 type TUseAppFormProps<TFormData extends FieldValues> = {
     submitHandler: SubmitHandler<TFormData>

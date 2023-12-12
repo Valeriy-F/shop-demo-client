@@ -7,7 +7,9 @@ import {
     } from './fields'
 import ProductForm, { createFormData } from './product-form'
 import { BaseProduct } from '../../model/product'
-import { useAppStore } from 'store/app-store'
+import { runInAction } from 'mobx'
+import { observer } from 'mobx-react-lite'
+import { useAppStore } from 'store/store'
 
 const ProductAddForm = () => {
     const {productStore} = useAppStore()
@@ -24,11 +26,10 @@ const ProductAddForm = () => {
             ]}
             submitHandler={productStore.addProduct}
             onCancelButtonClick={() => {
-                productStore.setIsAddMode(false)
+                runInAction(() => {productStore.isAddMode = false})
             }}
         />
     )
 }
 
-export default ProductAddForm
-
+export default observer(ProductAddForm)

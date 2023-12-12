@@ -4,8 +4,9 @@ import ProductListItemView from './product-list-item-view'
 import { Grid } from '@mui/material'
 import Error from 'components/error'
 import { OverlayLoading } from 'components/ui/loading'
+import { observer } from 'mobx-react-lite'
 import { ModelResponseError } from 'model/error'
-import { ELoadingState, useAppStore } from 'store/app-store'
+import { useAppStore } from 'store/store'
 
 const ProductList = () => {
     const { productStore: {
@@ -18,12 +19,12 @@ const ProductList = () => {
     let pageContent = <></>
 
     switch (productsLoading.state) {
-        case ELoadingState.Pending:
+        case 'pending':
             pageContent = <OverlayLoading />
 
             break;
 
-        case ELoadingState.Success:
+        case 'success':
             pageContent = (
                 <Grid container spacing={4} alignItems='stretch'>
                     {isAddMode &&
@@ -48,7 +49,7 @@ const ProductList = () => {
 
             break;
 
-        case ELoadingState.Error:
+        case 'error':
             pageContent = <Error error={productsLoading.error as ModelResponseError} />
 
             break;
@@ -57,4 +58,4 @@ const ProductList = () => {
     return pageContent
 }
 
-export default ProductList
+export default observer(ProductList)

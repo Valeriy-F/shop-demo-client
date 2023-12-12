@@ -1,7 +1,8 @@
 import Layout from 'components/layout'
 import { ProductDetails } from 'features/product'
+import { observer } from 'mobx-react-lite'
 import { useParams } from 'react-router-dom'
-import { useAppStore } from 'store/app-store'
+import { useAppStore } from 'store/store'
 
 const ProductDetailsPage = () => {
     const { productStore } = useAppStore()
@@ -14,5 +15,4 @@ const ProductDetailsPage = () => {
     )
 }
 
-export default ProductDetailsPage
-
+export default observer(ProductDetailsPage)

@@ -2,8 +2,10 @@ import Layout from 'components/layout'
 import NavigationContext from 'context/navigation-context'
 import { ProductList } from 'features/product'
 import { ProductAddButton } from 'features/product/components/ui/product-add-button'
+import { runInAction } from 'mobx'
+import { observer } from 'mobx-react-lite'
 import { useContext } from 'react'
-import { useAppStore } from 'store/app-store'
+import { useAppStore } from 'store/store'
 
 const ProductListPage = () => {
     const {productStore} = useAppStore()
@@ -23,7 +25,7 @@ const ProductListPage = () => {
                             return
                         }
 
-                        productStore.setIsAddMode(true)
+                        runInAction(() => {productStore.isAddMode = true})
                     }}
                 />
             ]
@@ -36,4 +38,4 @@ const ProductListPage = () => {
     )
 }
 
-export default ProductListPage
+export default observer(ProductListPage)

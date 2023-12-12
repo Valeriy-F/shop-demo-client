@@ -13,6 +13,8 @@ type TProductFiles = {
     image: string
 }
 
+type TProductHandler = (product: TBaseProduct) => Promise<void> | void
+
 const isTypeOfProductFiles = (object: any): object is TProductFiles => {
     return ('image' in object)
 }
@@ -97,6 +99,7 @@ export {
     type TBaseProduct,
     type TProduct,
     type TProductFiles,
+    type TProductHandler,
     BaseProduct,
     Product
 }
