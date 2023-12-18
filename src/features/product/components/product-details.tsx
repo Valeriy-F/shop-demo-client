@@ -6,17 +6,12 @@ import { ButtonLink } from 'components/ui/link'
 import { ResponseError } from 'model/error'
 
 type TProductDetailsProps = {
-    product: TProduct | null,
-    fetchProductError?: Error
+    product?: TProduct | null
 }
 
-const ProductDetails = ({product, fetchProductError}: TProductDetailsProps) => {
-    if (fetchProductError) {
-        return <Error error={(fetchProductError instanceof ResponseError) ? fetchProductError : ResponseError.create(fetchProductError)} />
-    }
-
+const ProductDetails = ({product}: TProductDetailsProps) => {
     if (!product) {
-        return (<></>)
+        return <Error error={ResponseError.create({status: 404, message: 'This page is not found'})} />
     }
 
     const mediaData: TCardMediaData = {

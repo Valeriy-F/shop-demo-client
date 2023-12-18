@@ -3,28 +3,31 @@ import {
     DisplayNameProductFormField,
     ImageFileProductFormField,
     PriceProductFormField
-    } from './fields';
-import ProductForm, { createFormData, TProductFormProps } from './product-form';
-import { TProduct } from '../../model/product';
+    } from './fields'
+import ProductForm, { createFormData } from './product-form'
+import { TProduct } from '../../model/product'
+import { useAppStore } from 'store/app-store'
 
 type TProductEditFormProps = {
     product: TProduct,
-} & Pick<TProductFormProps, 'submitHandler' | 'onCancelButtonClick'>
+}
 
-export default function ProductEditForm({ product, submitHandler, onCancelButtonClick }: TProductEditFormProps) {
+const ProductEditForm = ({ product }: TProductEditFormProps) => {
+    const { productStore } = useAppStore()
+
     return (
         <ProductForm
             formData={createFormData(product)}
-            submitHandler={submitHandler}
+            submitHandler={productStore.editProduct}
             formFields={[
                 ImageFileProductFormField,
                 DisplayNameProductFormField,
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
-            onCancelButtonClick={onCancelButtonClick}
+            onCancelButtonClick={() => { productStore.disableEditMode()}}
         />
     )
 }
 
-export { type TProductEditFormProps }
+export default ProductEditForm

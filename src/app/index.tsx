@@ -3,6 +3,7 @@ import { blue, blueGrey, deepOrange } from '@mui/material/colors'
 import CssBaseline from '@mui/material/CssBaseline'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { BrowserRouter } from 'react-router-dom'
+import { AppStoreProvider } from 'store/app-store'
 
 const theme = createTheme({
   palette: {
@@ -40,9 +41,11 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Routing />
-      </BrowserRouter>
+      <AppStoreProvider>
+        <BrowserRouter>
+          <Routing />
+        </BrowserRouter>
+      </AppStoreProvider>
     </ThemeProvider>
   );
 }

@@ -5,12 +5,13 @@ import {
     NameProductFormField,
     PriceProductFormField
     } from './fields'
-import ProductForm, { createFormData, TProductFormProps } from './product-form'
+import ProductForm, { createFormData } from './product-form'
 import { BaseProduct } from '../../model/product'
+import { useAppStore } from 'store/app-store'
 
-type TProductAddFormProps = Pick<TProductFormProps, 'submitHandler' | 'onCancelButtonClick'>
+const ProductAddForm = () => {
+    const {productStore} = useAppStore()
 
-export default function ProductAddForm({ submitHandler, onCancelButtonClick }: TProductAddFormProps) {
     return (
         <ProductForm
             formData={createFormData(BaseProduct.create())}
@@ -21,10 +22,13 @@ export default function ProductAddForm({ submitHandler, onCancelButtonClick }: T
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
-            submitHandler={submitHandler}
-            onCancelButtonClick={onCancelButtonClick}
+            submitHandler={productStore.addProduct}
+            onCancelButtonClick={() => {
+                productStore.setIsAddMode(false)
+            }}
         />
     )
 }
 
-export { type TProductAddFormProps }
+export default ProductAddForm
+

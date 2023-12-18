@@ -1,29 +1,21 @@
-import { TBaseProduct, TProduct } from '../model/product'
+import { TProduct } from '../model/product'
 import { Delete } from '@mui/icons-material'
 import { Button, Typography } from '@mui/material'
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
 import { useConfirm } from 'material-ui-confirm'
 import { useSnackbar } from 'notistack'
+import { useAppStore } from 'store/app-store'
 
 type TProductListItemViewProps = {
-    product: TProduct,
-    startProductEditProcess?: (product: TProduct) => void,
-    deleteProduct?: (product: TBaseProduct) => Promise<void>,
-    isAddMode: boolean
+    product: TProduct
 }
 
-export default function ProductListItemView(props: TProductListItemViewProps) {
-    const {
-        product,
-        startProductEditProcess,
-        deleteProduct,
-        isAddMode
-    } = props
-
+const ProductListItemView = ({product}: TProductListItemViewProps) => {
+    const {productStore} = useAppStore()
     const { enqueueSnackbar } = useSnackbar()
     const confirm = useConfirm()
 
-    const isProductEditable = startProductEditProcess && !isAddMode
+    const isProductEditable = !productStore.productForEdit && !productStore.isAddMode
 
     const mediaData: TCardMediaData = {
         component: 'img',
@@ -56,9 +48,9 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
                 return false
             }
 
-            startProductEditProcess(product)
+            productStore.enableEditMode(product)
         }}>Edit</Button>,
-        rightSide: deleteProduct && <Button size="small" color='error' onClick={async (event) => {
+        rightSide: <Button size="small" color='error' onClick={async (event) => {
             try {
                 await confirm({
                     title: `Delete product ${product.displayName}?`,
@@ -72,7 +64,7 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
             }
 
             try {
-                await deleteProduct(product)
+                await productStore.deleteProduct(product)
             } catch (error: any) {
                 enqueueSnackbar(error.message, {
                     variant: 'error',
@@ -92,5 +84,4 @@ export default function ProductListItemView(props: TProductListItemViewProps) {
     return <Card {...cardProps} />
 }
 
-export { type TProductListItemViewProps };
-
+export default ProductListItemView
