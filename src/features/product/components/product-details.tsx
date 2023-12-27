@@ -1,19 +1,13 @@
 import { TProduct } from '../model/product'
 import { Typography } from '@mui/material'
-import Error from 'components/error'
 import Card, { TCardActionsData, TCardMediaData, TCardProps } from 'components/ui/card'
 import { ButtonLink } from 'components/ui/link'
-import { ResponseError } from 'model/error'
 
 type TProductDetailsProps = {
-    product?: TProduct | null
+    product: TProduct
 }
 
 const ProductDetails = ({product}: TProductDetailsProps) => {
-    if (!product) {
-        return <Error error={ResponseError.create({status: 404, message: 'This page is not found'})} />
-    }
-
     const mediaData: TCardMediaData = {
         component: 'img',
         src: product.files.image as string,

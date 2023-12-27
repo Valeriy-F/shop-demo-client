@@ -75,4 +75,10 @@ class ModelResponseError extends ResponseError {
     }
 }
 
-export { ResponseError, ModelResponseError }
+const useErrorHandler = () => {
+    return (error: Error): ModelResponseError => {
+        return (error instanceof ModelResponseError) ? error : ModelResponseError.create(error)
+    }
+}
+
+export { ResponseError, ModelResponseError, useErrorHandler }

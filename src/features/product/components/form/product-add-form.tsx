@@ -7,10 +7,12 @@ import {
     } from './fields'
 import ProductForm, { createFormData } from './product-form'
 import { BaseProduct } from '../../model/product'
+import { useAddProduct } from 'features/product/hooks/use-product-form'
 import { useAppStore } from 'store/app-store'
 
 const ProductAddForm = () => {
-    const {productStore} = useAppStore()
+    const { productStore: { setIsAddMode } } = useAppStore()
+    const addProduct = useAddProduct()
 
     return (
         <ProductForm
@@ -22,9 +24,9 @@ const ProductAddForm = () => {
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
-            submitHandler={productStore.addProduct}
+            submitHandler={addProduct}
             onCancelButtonClick={() => {
-                productStore.setIsAddMode(false)
+                setIsAddMode(false)
             }}
         />
     )

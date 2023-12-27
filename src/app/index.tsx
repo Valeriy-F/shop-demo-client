@@ -2,6 +2,7 @@ import { Routing } from '../pages'
 import { blue, blueGrey, deepOrange } from '@mui/material/colors'
 import CssBaseline from '@mui/material/CssBaseline'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import { AppStoreProvider } from 'store/app-store'
 
@@ -37,15 +38,19 @@ const theme = createTheme({
   // },
 })
 
+const queryClient = new QueryClient()
+
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppStoreProvider>
-        <BrowserRouter>
-          <Routing />
-        </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <AppStoreProvider>
+          <BrowserRouter>
+            <Routing />
+          </BrowserRouter>
       </AppStoreProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

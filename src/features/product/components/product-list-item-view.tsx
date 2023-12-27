@@ -1,3 +1,4 @@
+import { useDeleteProductHandler } from '../hooks/use-product-api'
 import { TProduct } from '../model/product'
 import { Delete } from '@mui/icons-material'
 import { Button, Typography } from '@mui/material'
@@ -11,11 +12,12 @@ type TProductListItemViewProps = {
 }
 
 const ProductListItemView = ({product}: TProductListItemViewProps) => {
-    const {productStore} = useAppStore()
+    const { productStore: { productForEdit, isAddMode, enableEditMode } } = useAppStore()
+    const deleteProduct = useDeleteProductHandler()
     const { enqueueSnackbar } = useSnackbar()
     const confirm = useConfirm()
 
-    const isProductEditable = !productStore.productForEdit && !productStore.isAddMode
+    const isProductEditable = !productForEdit && !isAddMode
 
     const mediaData: TCardMediaData = {
         component: 'img',
@@ -48,7 +50,7 @@ const ProductListItemView = ({product}: TProductListItemViewProps) => {
                 return false
             }
 
-            productStore.enableEditMode(product)
+            enableEditMode(product)
         }}>Edit</Button>,
         rightSide: <Button size="small" color='error' onClick={async (event) => {
             try {
@@ -64,7 +66,7 @@ const ProductListItemView = ({product}: TProductListItemViewProps) => {
             }
 
             try {
-                await productStore.deleteProduct(product)
+                await deleteProduct(product)
             } catch (error: any) {
                 enqueueSnackbar(error.message, {
                     variant: 'error',
