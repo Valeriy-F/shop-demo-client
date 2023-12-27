@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  shop-demo-client:
+    image: vfomin/shop-demo-client:prod
+    container_name: shop_demo_client
+    build: .
+    restart: always
+    ports:
+      - 3000:80
