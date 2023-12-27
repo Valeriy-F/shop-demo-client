@@ -5,6 +5,7 @@ import {
     PriceProductFormField
     } from './fields'
 import ProductForm, { createFormData } from './product-form'
+import { useEditProduct } from '../../hooks/use-product-form'
 import { TProduct } from '../../model/product'
 import { useAppStore } from 'store/app-store'
 
@@ -13,19 +14,20 @@ type TProductEditFormProps = {
 }
 
 const ProductEditForm = ({ product }: TProductEditFormProps) => {
-    const { productStore } = useAppStore()
+    const { productStore: { disableEditMode } } = useAppStore()
+    const editProduct = useEditProduct()
 
     return (
         <ProductForm
             formData={createFormData(product)}
-            submitHandler={productStore.editProduct}
+            submitHandler={editProduct}
             formFields={[
                 ImageFileProductFormField,
                 DisplayNameProductFormField,
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
-            onCancelButtonClick={() => { productStore.disableEditMode()}}
+            onCancelButtonClick={() => {disableEditMode()}}
         />
     )
 }
