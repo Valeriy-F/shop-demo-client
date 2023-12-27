@@ -1,19 +1,19 @@
-import { NavLink } from './link';
-import NavigationContext from 'context/navigation-context';
-import { useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { NavLink } from './link'
+import NavigationContext from 'context/navigation-context'
+import { useContext } from 'react'
+import { useLocation } from 'react-router-dom'
 import {
     AppBar,
     Box,
     Toolbar,
     } from '@mui/material'
 
-export type TNavigationMenuItemData = {
+type TNavigationMenuItemData = {
     href: string
     name: string
 }
 
-export default function Navigation() {
+const Navigation = () => {
     const {navigationMenuData, navigationRightMenuData} = useContext(NavigationContext)
     const location = useLocation()
 
@@ -42,3 +42,6 @@ export default function Navigation() {
         </AppBar>
     )
 }
+
+export default Navigation
+export { type TNavigationMenuItemData }
