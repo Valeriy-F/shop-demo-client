@@ -4,16 +4,13 @@ import ProductListPage from './product-list-page'
 import { SnackbarProvider } from 'components/ui/notification'
 import NavigationContext from 'context/navigation-context'
 import { ConfirmProvider } from 'material-ui-confirm'
-import { observer } from 'mobx-react-lite'
 import { ResponseError } from 'model/error'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { useAppStore } from 'store/store'
 
 const PATH_PRODUCTS = 'products'
 
-const Routing = observer(() => {
-    const {productStore} = useAppStore()
+const Routing = () => {
     const navigationProviderValue = useContext(NavigationContext)
 
     navigationProviderValue.navigationMenuData = [
@@ -26,10 +23,6 @@ const Routing = observer(() => {
             name: 'Products'
         }
     ]
-
-    useEffect(() => {
-        productStore.loadProducts()
-    }, [])
 
     return (
         <ConfirmProvider>
@@ -45,6 +38,6 @@ const Routing = observer(() => {
             </SnackbarProvider>
         </ConfirmProvider>
     )
-})
+}
 
 export { Routing }

@@ -14,9 +14,11 @@
     "@types/react": "^18.2.25",
     "@types/react-dom": "^18.2.11",
     "axios": "^1.5.1",
+    "lodash": "^4.17.21",
     "material-ui-confirm": "^3.0.9",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
+    "mobx-state-tree": "^5.4.0",
     "mui-file-input": "^3.0.2",
     "notistack": "^3.0.1",
     "react": "^18.2.0",
@@ -52,6 +54,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.202",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.0.3"
   }

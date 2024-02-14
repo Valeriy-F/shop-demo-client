@@ -6,9 +6,8 @@ import {
     } from './fields'
 import ProductForm, { createFormData } from './product-form'
 import { TProduct } from '../../model/product'
-import { runInAction } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import { useAppStore } from 'store/store'
+import { useAppStore } from 'store/app-store'
 
 type TProductEditFormProps = {
     product: TProduct,
@@ -27,9 +26,7 @@ const ProductEditForm = ({ product }: TProductEditFormProps) => {
                 PriceProductFormField,
                 DescriptionProductFormField
             ]}
-            onCancelButtonClick={() => {
-                runInAction(() => {productStore.productForEdit = null})
-            }}
+            onCancelButtonClick={() => { productStore.disableEditMode()}}
         />
     )
 }
